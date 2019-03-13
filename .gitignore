@@ -84,5 +84,3 @@ typings/
 
 #python files
 *.pyc
-
-__pycache__

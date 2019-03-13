@@ -107,6 +107,7 @@ def main():
         count += 1
 
         # updates the ban rates of champions and such
+        pp.pprint(m.get_all_picks())
         report = update_champions(report, m.get_all_picks(), m.get_all_bans())
     pp.pprint(report)
 

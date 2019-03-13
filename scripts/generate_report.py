@@ -88,6 +88,45 @@ def update_champions(report, champ_picks, bans):
     return report
 
 
+def update_summoner_picks_and_roles(report, all_picks, participants, winning_team):
+    picks = merge_participants_picks_results(
+        all_picks, participants, winning_team)
+
+    r_s = report['summoners']
+
+    for pick in picks:
+        if not r_s[pick['summoner']].get('role'):
+            r_s[pick['summoner']]['role'] = {}
+
+        if r_s[pick['summoner']]['role'].get(pick['role']):
+            r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
+        else:
+            r_s[pick['summoner']]['role'][pick['role']] = {
+                'pick': 1, 'role rate': 0}
+
+    for summoner in r_s:
+        if r_s[summoner] != {}:
+            for role in r_s[summoner]['role']:
+                r_s[summoner]['role'][role]['role rate'] = "{:.2f}%".format(
+                    r_s[summoner]['role'][role].get('pick', 0) / r_s[summoner]['games played'] * 100)
+    return report
+
+
+def merge_participants_picks_results(picks, participants, winning_team):
+    d = []
+    for i in range(len(picks)):
+        temp = {"champ_id": CHAMPION_IDS[str(picks[i]['champ_id'])], "role": picks[i]
+                ['role'], "summoner": participants[i]['name']}
+
+        if temp['summoner'] in winning_team:
+            temp['result'] = "won"
+        else:
+            temp['result'] = "lost"
+
+        d.append(temp)
+    return d
+
+
 def main():
     report = {'summoners': {}, 'champions': {
         'bans': {}, 'picks': {}, 'total games played': 0}}
@@ -107,8 +146,11 @@ def main():
         count += 1
 
         # updates the ban rates of champions and such
-        pp.pprint(m.get_all_picks())
         report = update_champions(report, m.get_all_picks(), m.get_all_bans())
+
+        report = update_summoner_picks_and_roles(
+            report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
+
     pp.pprint(report)
 
 

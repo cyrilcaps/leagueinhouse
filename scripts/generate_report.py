@@ -100,9 +100,11 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
 
         if r_s[pick['summoner']]['role'].get(pick['role']):
             r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
+            r_s[pick['summoner']]['role'][pick['role']
+                                          ]['champions'].append(pick['champion'])
         else:
             r_s[pick['summoner']]['role'][pick['role']] = {
-                'pick': 1, 'role rate': 0}
+                'pick': 1, 'role rate': 0, 'champions': [pick['champion']]}
 
     for summoner in r_s:
         if r_s[summoner] != {}:
@@ -115,7 +117,7 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
 def merge_participants_picks_results(picks, participants, winning_team):
     d = []
     for i in range(len(picks)):
-        temp = {"champ_id": CHAMPION_IDS[str(picks[i]['champ_id'])], "role": picks[i]
+        temp = {"champion": CHAMPION_IDS[str(picks[i]['champ_id'])], "role": picks[i]
                 ['role'], "summoner": participants[i]['name']}
 
         if temp['summoner'] in winning_team:
@@ -139,7 +141,6 @@ def main():
     count = 0
     for match in get_matches():
         m = Match(match)
-        print(m.match_id)
         # updates statistics for the summoner in each game
         report = update_match_results(
             report, m.get_winning_team(), m.get_losing_team())

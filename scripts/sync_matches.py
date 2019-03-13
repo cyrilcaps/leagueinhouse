@@ -49,14 +49,16 @@ def sync_custom_match_history():
 
 def get_local_custom_match_history():
     matches = {}
-    matches_d = dirname(dirname(abspath(__file__))) + "/matches"
+    matches_d = dirname(dirname(abspath(__file__))) + \
+        "/inhouse_analyzer/match_data"
 
     return [int(f.split(".")[0]) for f in listdir(
         matches_d) if isfile(join(matches_d, f))]
 
 
 def post_local_match_history(match_id, match):
-    matches_d = dirname(dirname(abspath(__file__))) + "/matches"
+    matches_d = dirname(dirname(abspath(__file__))) + \
+        "/inhouse_analyzer/match_data"
     with open('{}/{}.json'.format(matches_d, match_id), 'w') as outfile:
         json.dump(match, outfile)
 

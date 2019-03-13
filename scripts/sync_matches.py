@@ -11,25 +11,6 @@ import json
 pp = pprint.PrettyPrinter(indent=4)
 
 
-def get_custom_match_history(username):
-    # request_url = RIOT_GAMES_LINK + RIOT_GET_MATCHES_URL + "?api_key=" + RIOT_API_KEY
-
-    request_url = RIOT_GAMES_LINK + RIOT_GET_SUMMONER + \
-        username + "?api_key=" + RIOT_API_KEY
-
-    r = requests.get(request_url)
-
-    summoner = r.json()
-
-    request_url = RIOT_GAMES_LINK + \
-        RIOT_GET_MATCHES + \
-        summoner['accountId'] + "?api_key=" + RIOT_API_KEY
-
-    r = requests.get(request_url)
-    print(r)
-    pp.pprint(r.json())
-
-
 def sync_custom_match_history():
     local_match_ids = get_local_custom_match_history()
     need_to_create_locally = set(SEASON_TWO_MATCH_IDS) - set(local_match_ids)
@@ -49,22 +30,20 @@ def sync_custom_match_history():
 
 def get_local_custom_match_history():
     matches = {}
-    matches_d = dirname(dirname(abspath(__file__))) + \
-        "/inhouse_analyzer/match_data"
+    matches_d = dirname(abspath(__file__)) + \
+        "/match_data"
 
     return [int(f.split(".")[0]) for f in listdir(
         matches_d) if isfile(join(matches_d, f))]
 
 
 def post_local_match_history(match_id, match):
-    matches_d = dirname(dirname(abspath(__file__))) + \
-        "/inhouse_analyzer/match_data"
+    matches_d = dirname(abspath(__file__)) + \
+        "/match_data"
     with open('{}/{}.json'.format(matches_d, match_id), 'w') as outfile:
         json.dump(match, outfile)
 
 
 if __name__ == "__main__":
-    username = "raphib737"
-
     # Gets and downloads all the custom match ids for SEASON_TWO_MATCH_IDS in config.py
     sync_custom_match_history()

@@ -1,3 +1,7 @@
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
+
 class Match:
 
     def __init__(self, match):
@@ -7,6 +11,32 @@ class Match:
 
         self.set_teams(self.participants[:5], self.participants[5:])
         self.set_match_results()
+
+        self.blue_bans = [b['championId'] for b in match['teams'][0]['bans']]
+        self.red_bans = [b['championId'] for b in match['teams'][1]['bans']]
+        self.all_picks = [{'champ_id': b['championId'], 'role':b['timeline'].get(
+            'lane', 'Role not determined'), 'participant_id': b['participantId']} for b in match['participants']]
+
+        self.blue_picks = self.all_picks[:5]
+        self.red_picks = self.all_picks[5:]
+
+    def get_blue_bans(self):
+        return self.blue_bans
+
+    def get_red_bans(self):
+        return self.red_bans
+
+    def get_all_bans(self):
+        return self.blue_bans + self.red_bans
+
+    def get_blue_picks(self):
+        return self.get_blue_picks
+
+    def get_red_picks(self):
+        return self.get_red_picks
+
+    def get_all_picks(self):
+        return self.all_picks
 
     def get_participants(self):
         return self.participants

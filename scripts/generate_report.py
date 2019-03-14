@@ -99,13 +99,13 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
         if not r_s[pick['summoner']].get('role'):
             r_s[pick['summoner']]['role'] = {}
 
-        if r_s[pick['summoner']]['role'].get(pick['role']):
-            r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
-            r_s[pick['summoner']]['role'][pick['role']
-                                          ]['champions'].append((pick['champion'], pick['result']))
-        else:
+        if not r_s[pick['summoner']]['role'].get(pick['role']):
             r_s[pick['summoner']]['role'][pick['role']] = {
-                'pick': 1, 'role rate': 0, 'champions': [(pick['champion'], pick['result'])]}
+                'pick': 0, 'role rate': 0, 'champions': []}
+
+        r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
+        r_s[pick['summoner']]['role'][pick['role']
+                                      ]['champions'].append((pick['champion'], pick['result'], pick['kda'], pick['vision score'], pick['game duration']))
 
     for summoner in r_s:
         if r_s[summoner] != {}:
@@ -118,8 +118,13 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
 def merge_participants_picks_results(picks, participants, winning_team):
     d = []
     for i in range(len(picks)):
-        temp = {"champion": CHAMPION_IDS[str(picks[i]['champ_id'])], "role": picks[i]
-                ['role'], "summoner": participants[i]['name']}
+        temp = {}
+        temp["champion"] = CHAMPION_IDS[str(picks[i]['champ_id'])]
+        temp["role"] = picks[i]['role']
+        temp["summoner"] = participants[i]['name']
+        temp['kda'] = picks[i]['kda']
+        temp['vision score'] = picks[i]['vision score']
+        temp['game duration'] = picks[i]['game duration']
 
         if temp['summoner'] in winning_team:
             temp['result'] = "won"
@@ -131,22 +136,47 @@ def merge_participants_picks_results(picks, participants, winning_team):
 
 
 def aggregate_champions_record(report):
-    pp.pprint(report)
     r_s = report['summoners']
-    for s in report['summoners']:
-        for role in r_s[s]['role']:
-            champs = Counter(r_s[s]['role'][role]['champions'])
+
+    for s in r_s:
+        for r in r_s[s]['role']:
+            average_kda_per_champ = {}
+            averages_per_role = {"score": 0,
+                                 "games played": 0, "game duration": 0}
+
+            champs = [(c[0], c[1]) for c in r_s[s]['role'][r]['champions']]
+
+            champs = Counter(champs)
             temp = {}
             for c_r in champs:
                 if not temp.get(c_r[0]):
                     temp[c_r[0]] = {"won": 0, "lost": 0}
                 temp[c_r[0]][c_r[1]] = champs[c_r]
 
-            for c in temp:
-                temp[c]['win rate'] = "{:.2f}%".format(temp[c]['won'] /
-                                                       (temp[c]['won'] + temp[c]['lost']) * 100)
+            for champ in temp:
+                temp[champ]['win rate'] = "{:.2f}%".format(temp[champ]['won'] /
+                                                           (temp[champ]['won'] + temp[champ]['lost']) * 100)
 
-            r_s[s]['role'][role]['champions'] = temp
+            for c in r_s[s]['role'][r]['champions']:
+                averages_per_role["score"] += c[3]
+                averages_per_role["games played"] += 1
+                averages_per_role['game duration'] += c[4]
+
+                k, d, a = list(map(int, c[2].split("/")))
+
+                if not average_kda_per_champ.get(c[0]):
+                    average_kda_per_champ[c[0]] = {
+                        "kills": 0, "deaths": 0, "assists": 0}
+                average_kda_per_champ[c[0]]['kills'] += k
+                average_kda_per_champ[c[0]]['deaths'] += d
+                average_kda_per_champ[c[0]]['assists'] += a
+            r_s[s]['role'][r]["average vision score"] = "{:.2f}".format(
+                averages_per_role['score'] / averages_per_role['games played'])
+
+            r_s[s]['role'][r]["average game duration"] = "{:.2f}".format(
+                averages_per_role['game duration'] / averages_per_role['games played'] / 60)
+
+            r_s[s]['role'][r]['champions'] = temp
 
     return report
 
@@ -175,7 +205,7 @@ def main():
             report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
 
     report = aggregate_champions_record(report)
-    # pp.pprint(report)
+    pp.pprint(report)
 
 
 if __name__ == "__main__":

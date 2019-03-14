@@ -14,10 +14,13 @@ class Match:
 
         self.blue_bans = [b['championId'] for b in match['teams'][0]['bans']]
         self.red_bans = [b['championId'] for b in match['teams'][1]['bans']]
-        self.all_picks = [{'champ_id': b['championId'], 'role':b['timeline'].get(
-            'lane', 'Role not determined'), 'participant_id': b['participantId']} for b in match['participants']]
 
-        self.blue_picks = self.all_picks[:5]
+        self.all_picks = []
+        for b in match['participants']:
+            self.all_picks.append({'champ_id': b['championId'], 'role': b['timeline'].get(
+                'lane', 'Role not determined'), 'participant_id': b['participantId'], "kda": "{}/{}/{}".format(b['stats']['kills'], b['stats']['deaths'], b['stats']['assists']), 'vision score': b['stats']['visionScore'], "game duration": self.data['gameDuration']})
+
+        self.blue_picks = self.all_picks[: 5]
         self.red_picks = self.all_picks[5:]
 
     def get_blue_bans(self):

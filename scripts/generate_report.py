@@ -25,8 +25,8 @@ def get_matches():
 
 
 def update_match_results_helper(report, status, team):
+    r_s = report['summoners']
     for s in team:
-        r_s = report['summoners']
         if r_s.get(s, None) != None:
             if not r_s[s].get(status):
                 r_s[s][status] = 0
@@ -46,7 +46,18 @@ def update_match_results_helper(report, status, team):
             r_s[s][status] = 1
             r_s[s]['games played'] = 1
 
-    print(team, status)
+    for p1 in team:
+        for p2 in team:
+            if p1 != p2:
+                if not r_s[p1].get('partners'):
+                    r_s[p1]['partners'] = {}
+
+                if not r_s[p1]['partners'].get(p2):
+                    r_s[p1]['partners'][p2] = {
+                        "won": 0, "lost": 0, "win rate": 0}
+
+                r_s[p1]['partners'][p2][status] += 1
+
     return report
 
 
@@ -180,6 +191,16 @@ def aggregate_champions_record(report):
     return report
 
 
+def aggregate_summoners_records(report):
+    r_s = report['summoners']
+    for s in r_s:
+        for p in r_s[s]['partners']:
+            r_s[s]['partners'][p]['win rate'] = "{:.2f}%".format(
+                r_s[s]['partners'][p]['won']/(r_s[s]['partners'][p]['lost'] + r_s[s]['partners'][p]['won']) * 100)
+
+    return report
+
+
 def main():
     report = {'summoners': {}, 'champions': {
         'bans': {}, 'picks': {}, 'total games played': 0}}
@@ -196,12 +217,13 @@ def main():
             report, m.get_winning_team(), m.get_losing_team())
 
         # updates the ban rates of champions and such
-        # report = update_champions(report, m.get_all_picks(), m.get_all_bans())
+        report = update_champions(report, m.get_all_picks(), m.get_all_bans())
 
-        # report = update_summoner_picks_and_roles(
-        #     report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
-        break
-    # report = aggregate_champions_record(report)
+        report = update_summoner_picks_and_roles(
+            report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
+
+    report = aggregate_champions_record(report)
+    report = aggregate_summoners_records(report)
     pp.pprint(report)
 
 

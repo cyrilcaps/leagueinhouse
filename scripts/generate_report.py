@@ -12,10 +12,13 @@ import json
 pp = pprint.PrettyPrinter(indent=2)
 
 
-def get_matches():
+def get_matches(match_directory=None):
     matches = []
-    matches_d = dirname(abspath(__file__)) + \
-        "/match_data"
+
+    if match_directory:
+        matches_d = dirname(abspath(__file__)) + "/" + match_directory
+    else:
+        matches_d = dirname(abspath(__file__)) + "/season2"
 
     for match in listdir(matches_d):
         with open(matches_d + "/" + match) as m:
@@ -201,14 +204,17 @@ def aggregate_summoners_records(report):
     return report
 
 
+def post_to_server(report, file_name):
+    DEST = dirname(dirname(abspath(__file__))) + \
+        "/inhouse_analyzer/overview_data"
+
+    with open("{}/{}".format(DEST, file_name+".json"), 'w') as outfile:
+        json.dump(report, outfile)
+
+
 def main():
     report = {'summoners': {}, 'champions': {
         'bans': {}, 'picks': {}, 'total games played': 0}}
-    for s in SUMMONERS:
-        report['summoners'][s] = {}
-
-    match_results = SUMMONERS
-    champions = CHAMPION_IDS
 
     for match in get_matches():
         m = Match(match)
@@ -224,7 +230,7 @@ def main():
 
     report = aggregate_champions_record(report)
     report = aggregate_summoners_records(report)
-    pp.pprint(report)
+    post_to_server(report, 'season_2')
 
 
 if __name__ == "__main__":

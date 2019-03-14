@@ -3,6 +3,7 @@ import requests
 import pprint
 
 from match import Match
+from collections import Counter
 
 from os import listdir, mkdir
 from os.path import isfile, join, dirname, abspath
@@ -101,10 +102,10 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
         if r_s[pick['summoner']]['role'].get(pick['role']):
             r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
             r_s[pick['summoner']]['role'][pick['role']
-                                          ]['champions'].append(pick['champion'])
+                                          ]['champions'].append((pick['champion'], pick['result']))
         else:
             r_s[pick['summoner']]['role'][pick['role']] = {
-                'pick': 1, 'role rate': 0, 'champions': [pick['champion']]}
+                'pick': 1, 'role rate': 0, 'champions': [(pick['champion'], pick['result'])]}
 
     for summoner in r_s:
         if r_s[summoner] != {}:
@@ -127,6 +128,27 @@ def merge_participants_picks_results(picks, participants, winning_team):
 
         d.append(temp)
     return d
+
+
+def aggregate_champions_record(report):
+    pp.pprint(report)
+    r_s = report['summoners']
+    for s in report['summoners']:
+        for role in r_s[s]['role']:
+            champs = Counter(r_s[s]['role'][role]['champions'])
+            temp = {}
+            for c_r in champs:
+                if not temp.get(c_r[0]):
+                    temp[c_r[0]] = {"won": 0, "lost": 0}
+                temp[c_r[0]][c_r[1]] = champs[c_r]
+
+            for c in temp:
+                temp[c]['win rate'] = "{:.2f}%".format(temp[c]['won'] /
+                                                       (temp[c]['won'] + temp[c]['lost']) * 100)
+
+            r_s[s]['role'][role]['champions'] = temp
+
+    return report
 
 
 def main():
@@ -152,7 +174,8 @@ def main():
         report = update_summoner_picks_and_roles(
             report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
 
-    pp.pprint(report)
+    report = aggregate_champions_record(report)
+    # pp.pprint(report)
 
 
 if __name__ == "__main__":

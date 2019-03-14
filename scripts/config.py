@@ -95,7 +95,7 @@ CHAMPION_IDS = {
     '57': 'Maokai',
     '11': 'MasterYi',
     '21': 'MissFortune',
-    '62': 'MonkeyKing',
+    '62': 'Wukong',
     '82': 'Mordekaiser',
     '25': 'Morgana',
     '267': 'Nami',

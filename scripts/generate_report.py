@@ -28,26 +28,25 @@ def update_match_results_helper(report, status, team):
     for s in team:
         r_s = report['summoners']
         if r_s.get(s, None) != None:
-            if r_s[s].get(status):
-                r_s[s][status] += 1
-            else:
-                r_s[s][status] = 1
+            if not r_s[s].get(status):
+                r_s[s][status] = 0
+            r_s[s][status] += 1
 
-            if r_s[s].get('games played'):
-                r_s[s]['games played'] += 1
-            else:
-                r_s[s]['games played'] = 1
+            if not r_s[s].get('games played'):
+                r_s[s]['games played'] = 0
+            r_s[s]['games played'] += 1
 
             if r_s[s].get('won', 0) > 0:
-                r_s[s]['win rate'] = str(
-                    r_s[s]['won']/r_s[s]['games played'] * 100) + "%"
+                r_s[s]['win rate'] = "{:.2f}%".format(
+                    r_s[s]['won']/r_s[s]['games played'] * 100)
             else:
-                r_s[s]['win rate'] = 0
+                r_s[s]['win rate'] = "00.00%"
         else:
             r_s[s] = {}
             r_s[s][status] = 1
             r_s[s]['games played'] = 1
 
+    print(team, status)
     return report
 
 
@@ -190,21 +189,19 @@ def main():
     match_results = SUMMONERS
     champions = CHAMPION_IDS
 
-    count = 0
     for match in get_matches():
         m = Match(match)
         # updates statistics for the summoner in each game
         report = update_match_results(
             report, m.get_winning_team(), m.get_losing_team())
-        count += 1
 
         # updates the ban rates of champions and such
-        report = update_champions(report, m.get_all_picks(), m.get_all_bans())
+        # report = update_champions(report, m.get_all_picks(), m.get_all_bans())
 
-        report = update_summoner_picks_and_roles(
-            report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
-
-    report = aggregate_champions_record(report)
+        # report = update_summoner_picks_and_roles(
+        #     report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
+        break
+    # report = aggregate_champions_record(report)
     pp.pprint(report)
 
 

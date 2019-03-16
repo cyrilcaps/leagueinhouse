@@ -12,8 +12,9 @@ class Overview extends Component {
     let d = this.props.data;
     var elements = [];
     if (typeof (d) == 'object') {
-      for (var summoner in d['summoners']) {
-        let dataToPass = {summoner: d['summoners'][summoner]};
+      var summoners = d['summoners']['sorted_summoners'];
+      for (var i in summoners) {
+        let dataToPass = {summoner: d['summoners'][summoners[i]]};
         elements.push(<SummonerProfiles data = {
           dataToPass
         } />);

@@ -62,7 +62,7 @@ class SummonerProfiles extends Component {
     }
 
     return (
-        <div className = 'userProfiles'><div className = 'OsummName'><strong>{summoner}</strong><
+        <div className = 'userProfiles'><div className = 'OsummName'>{summoner}<
             /div>
           <div className = 'Orecord'>
           <CanvasJSChart className = 'OwinrateChart' options =

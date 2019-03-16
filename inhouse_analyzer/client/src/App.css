@@ -72,6 +72,7 @@ a:hover{
     margin: 1% 1%;
 }
 .OsummName{
+    font-weight: bold;
     margin-top: 1%;
     margin-left: 1%;
     width:100%;

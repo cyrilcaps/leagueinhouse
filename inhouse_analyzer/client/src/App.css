@@ -83,9 +83,14 @@ a:hover{
 }
 
 .Orecord{
-    float: left;
+    padding-left:2.5%;
+    text-align: center;
+    width:95%;
+    display: inline-block;
     font-size: 20px;
+    background: transparent;
 }
+
 .divChamps{
     font-size: 20px;
     float: left;

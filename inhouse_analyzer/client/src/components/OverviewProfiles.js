@@ -1,5 +1,10 @@
 import '../App.css';
+
 import React, {Component} from 'react';
+
+import CanvasJSReact from './canvasjs.react';
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 const importAll = require => require.keys().reduce((acc, next) => {
   acc[next.replace('./', '')] = require(next);
@@ -9,11 +14,11 @@ const importAll = require => require.keys().reduce((acc, next) => {
 const images =
     importAll(require.context('./images/champion_squares', false, /\.(png)$/));
 
-console.log(images);
 class SummonerProfiles extends Component {
   constructor(props) {
     super();
   };
+
 
   render() {
     let d = this.props['data']['summoner'];
@@ -24,7 +29,9 @@ class SummonerProfiles extends Component {
     var champ_list = [];
     for (var i in champs) {
       let source = champs[i][0] + '.png'
-      champ_list.push(<img className = 'Ochamps' src={images[source]}></img>)
+      champ_list.push(
+          <img className = 'Ochamps' src = {images[source]}>
+          </img>)
       if (champ_list.length > 2) {
         break;
       }
@@ -38,19 +45,35 @@ class SummonerProfiles extends Component {
       }
     }
 
+    const options = {
+        animationEnabled: true,
+        title:{
+            "text": "Win Rate:" + winRate
+        },
+        data:[{
+            type: "pie",
+            showInLegend: false,
+            startAngle: 270,
+            dataPoints: [
+                { label: "Lost" , y: lost,color:'red'},
+                { label: "Won", y: won, color:'#003366'}
+            ]
+        }]
+    }
 
     return (
-        <div className = 'userProfiles'><div className = 'OsummName'>{summoner}<
+        <div className = 'userProfiles'><div className = 'OsummName'><strong>{summoner}</strong><
             /div>
-        <div className = 'Orecord'>Won : {won}<br></br>Lost:
-            {lost}<br>
-        </br> Win Rate:
-                    {winRate}<br></br>Roles:
-            {role_list.toString().toLowerCase()}<
-                /div>
-            <div className = 'divChamps'>Played Champs:<br></br>{[champ_list]}</div>
+          <div className = 'Orecord'>
+          <CanvasJSChart className = 'OwinrateChart' options =
+           {
+             options
+           } />
+          </div><div className = 'divChamps'>
+          <strong>Popular Champs:
+              </strong><br></br>{[champ_list]}</div>
   < /div>)
+    }
   }
-}
 
-export default SummonerProfiles;
+  export default SummonerProfiles;

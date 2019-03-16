@@ -209,6 +209,37 @@ def aggregate_summoners_records(report):
     return report
 
 
+def aggregate_played_roles(report):
+    r_s = report['summoners']
+
+    for s in r_s:
+        pref_roles = []
+        pref_champs = {}
+        for r in r_s[s]['role']:
+            role_games = 0
+            for champ in r_s[s]['role'][r]['champions']:
+                games_played = r_s[s]['role'][r]['champions'][champ]['lost'] + \
+                    r_s[s]['role'][r]['champions'][champ]['won']
+                pref_champs[champ] = games_played
+                role_games += games_played
+            pref_roles.append((r, role_games))
+
+        r_s[s]['most played roles'] = sorted(
+            pref_roles, key=takeSecond, reverse=True)
+
+        p_c = []
+        for key in pref_champs:
+            p_c.append((key, pref_champs[key]))
+        r_s[s]['most played champs'] = sorted(
+            p_c, key=takeSecond, reverse=True)
+
+    return report
+
+
+def takeSecond(elem):
+    return elem[1]
+
+
 def post_to_server(report, file_name):
     DEST = dirname(dirname(abspath(__file__))) + \
         "/inhouse_analyzer/overview_data"
@@ -235,6 +266,7 @@ def main():
 
     report = aggregate_champions_record(report)
     report = aggregate_summoners_records(report)
+    report = aggregate_played_roles(report)
     post_to_server(report, 'season_2')
     # pp.pprint(report)
 

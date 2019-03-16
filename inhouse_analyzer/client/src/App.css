@@ -29,5 +29,8 @@ a{
 }
 a:hover{
     border-bottom: white solid 3px;
+}
 
+.active{
+    border-bottom: white solid 3px;
 }

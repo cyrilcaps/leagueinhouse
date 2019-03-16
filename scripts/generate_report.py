@@ -248,6 +248,19 @@ def post_to_server(report, file_name):
         json.dump(report, outfile)
 
 
+def order_players_by_winrate(report):
+    r_s = report['summoners']
+    ordered_keys = []
+    for s in r_s:
+        ordered_keys.append(
+            (s, r_s[s]['won']/(r_s[s]['won'] + r_s[s]['lost'])))
+    ordered_keys = sorted(
+        ordered_keys, key=takeSecond, reverse=True)
+
+    r_s['sorted_summoners'] = [x[0] for x in ordered_keys]
+    return report
+
+
 def main():
     report = {'summoners': {}, 'champions': {
         'bans': {}, 'picks': {}, 'total games played': 0}}
@@ -267,8 +280,9 @@ def main():
     report = aggregate_champions_record(report)
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
+    report = order_players_by_winrate(report)
     post_to_server(report, 'season_2')
-    # pp.pprint(report)
+    pp.pprint(report)
 
 
 if __name__ == "__main__":

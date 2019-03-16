@@ -92,6 +92,10 @@ a:hover{
     background: transparent;
 }
 
+.Oroles{
+    font-weight: bold;
+    font-size: 20px;
+}
 .divChamps{
     font-size: 20px;
     float: left;
@@ -102,4 +106,8 @@ a:hover{
     height:75px;
     margin: 2px 1px;
 
+}
+
+.Orole{
+    width:50px;
 }

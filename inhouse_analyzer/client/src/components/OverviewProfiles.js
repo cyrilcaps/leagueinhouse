@@ -14,6 +14,9 @@ const importAll = require => require.keys().reduce((acc, next) => {
 const images =
     importAll(require.context('./images/champion_squares', false, /\.(png)$/));
 
+const rolesImages =
+    importAll(require.context('./images/roles', false, /\.(png)$/));
+
 class SummonerProfiles extends Component {
   constructor(props) {
     super();
@@ -34,7 +37,6 @@ class SummonerProfiles extends Component {
           champs[i][0].charAt(0).toUpperCase() + champs[i][0].slice(1);
 
       let source = champ_name + '.png'
-      console.log(source)
       champ_list.push(
           <img className = 'Ochamps' src = {images[source]}>
           </img>)
@@ -45,7 +47,8 @@ class SummonerProfiles extends Component {
 
     var role_list = [];
     for (var k in roles) {
-      role_list.push(roles[k][0]);
+      let rolePng = roles[k][0].toLowerCase() + ".png";
+      role_list.push(<img className = 'Orole' src = {rolesImages[rolePng]}></img>);
       if (role_list.length > 2) {
         break;
       }
@@ -54,31 +57,31 @@ class SummonerProfiles extends Component {
     const options = {
         animationEnabled: true,
         title:{
-            "text": "Win Rate: " + winRate
+            'text': 'Win Rate: ' + winRate
         },
         data:[{
-            type: "pie",
+            type: 'pie',
             showInLegend: false,
             startAngle: 270,
-            creditText: "",
-            creditHref: "",
+            creditText: '',
+            creditHref: '',
             dataPoints: [
-                { label: "Lost" , y: lost,color:'red'},
-                { label: "Won", y: won, color:'#003366'}
+                { label: 'Lost' , y: lost,color:'red'},
+                { label: 'Won', y: won, color:'#003366'}
             ]
         }]
     }
 
     return (
-        <div className = 'userProfiles'><div className = 'OsummName'>{summoner}<
-            /div>
+        <div className = 'userProfiles'><div className = 'OsummName'>{summoner}</div>
           <div className = 'Orecord'>
           <CanvasJSChart className = 'OwinrateChart' options =
            {
              options
            } />
-          </div><div className = 'divChamps'>
-          <strong>Popular Champs:
+            </div>
+          <div className = 'Oroles'>Preferred Roles: <br></br>{role_list}</div>
+          <div className = 'divChamps'><strong>Popular Champs:
               </strong><br></br>{[champ_list]}</div>
   < /div>)
     }

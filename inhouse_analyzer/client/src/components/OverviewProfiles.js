@@ -47,9 +47,10 @@ class SummonerProfiles extends Component {
 
     var role_list = [];
     for (var k in roles) {
+      console.log(roles[k])
       let rolePng = roles[k][0].toLowerCase() + ".png";
       role_list.push(<img className = 'Orole' src = {rolesImages[rolePng]}></img>);
-      if (role_list.length > 2) {
+      if (role_list.length >= 2) {
         break;
       }
     }

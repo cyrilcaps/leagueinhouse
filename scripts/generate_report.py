@@ -108,12 +108,32 @@ def update_champions(report, champ_picks, bans):
     return report
 
 
+def get_right_roles(team):
+    bottoms_index = []
+    for t in range(len(team)):
+        if team[t]['role'] == "BOTTOM":
+            bottoms_index.append((t, team[t]['cs'], team[t]['summoner']))
+    # print(bottoms_index)
+    # print("returning: {}".format(sorted(bottoms_index, key=takeSecond)[0]))
+    return sorted(bottoms_index, key=takeSecond)[0][0]
+
+
+def get_supports_from_game(picks):
+    t1 = picks[:5]
+    t2 = picks[5:]
+
+    picks[get_right_roles(t1)]['role'] = "SUPPORT"
+    picks[get_right_roles(t2)+5]['role'] = "SUPPORT"
+
+    return picks
+
+
 def update_summoner_picks_and_roles(report, all_picks, participants, winning_team):
     picks = merge_participants_picks_results(
         all_picks, participants, winning_team)
+    picks = get_supports_from_game(picks)
 
     r_s = report['summoners']
-
     for pick in picks:
         if not r_s[pick['summoner']].get('role'):
             r_s[pick['summoner']]['role'] = {}
@@ -144,6 +164,7 @@ def merge_participants_picks_results(picks, participants, winning_team):
         temp['kda'] = picks[i]['kda']
         temp['vision score'] = picks[i]['vision score']
         temp['game duration'] = picks[i]['game duration']
+        temp['cs'] = picks[i]['minions killed']
 
         if temp['summoner'] in winning_team:
             temp['result'] = "won"
@@ -269,6 +290,7 @@ def main(season):
     for match in get_matches(season):
         m = Match(match)
         # updates statistics for the summoner in each game
+        print(m.match_id)
         report = update_match_results(
             report, m.get_winning_team(), m.get_losing_team())
 
@@ -277,7 +299,6 @@ def main(season):
 
         report = update_summoner_picks_and_roles(
             report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
-
     report = aggregate_champions_record(report)
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)

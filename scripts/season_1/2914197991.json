@@ -243,7 +243,7 @@
             "spell2Id": 3,
             "teamId": 100,
             "timeline": {
-                "lane": "MIDDLE",
+                "lane": "BOTTOM",
                 "participantId": 1,
                 "goldPerMinDeltas": {
                     "0-10": 146.8,
@@ -378,7 +378,7 @@
             "spell2Id": 4,
             "teamId": 100,
             "timeline": {
-                "lane": "MIDDLE",
+                "lane": "BOTTOM",
                 "participantId": 2,
                 "goldPerMinDeltas": {
                     "0-10": 193.89999999999998,

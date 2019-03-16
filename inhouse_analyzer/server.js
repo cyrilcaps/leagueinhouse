@@ -5,10 +5,14 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-var overviewData = require('./overview_data/season_2.json');
+var overviewSeason2Data = require('./overview_data/season_2.json');
 
-app.get('/api/overview', (req, res) => {
-  res.send(overviewData);
+app.get('/api/season/2/overview', (req, res) => {
+  res.send(overviewSeason2Data);
+});
+
+app.get('/api/season/1/overview', (req, res) => {
+  res.send(overviewSeason2Data);
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

@@ -20,7 +20,9 @@ class App extends Component {
         .catch(err => console.log(err));
   }
   callApi = async () => {
-    const response = await fetch('/api/overview');
+    var loc = window.location.href.split('/'), season = loc[loc.length - 2];
+    let url = '/api/season/' + season + '/overview';
+    const response = await fetch(url);
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
@@ -47,7 +49,7 @@ class App extends Component {
     return (
         <div className = 'main'><ul className = 'navbar'><li>
         <a className = {oClass} href = '#' onClick = {this.activateState.bind(
-             this)}>Overview</a>
+             this)}>Overview</a >
         </li><li>
         <a className = {sClass} href = '#Summoners' onClick =
              {this.activateState.bind(this)}>Summoners</a>
@@ -55,8 +57,9 @@ class App extends Component {
         <a className = {cClass} href = '#Champions' onClick =
              {this.activateState.bind(this)}>Champions</a>
         </li>
-        </ul><Overview data={
-      this.state.response}/></div>);
+        </ul><Overview data = {
+          this.state.response
+        } /></div>);
   }
 }
 

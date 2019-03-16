@@ -1,5 +1,5 @@
 body{
-    /* background-image: url("./imgs/league_background.png"); */
+    background-image: url("components/images/league_background.png"); 
     background-color: black;
     background-repeat: cover no-repeat;
     background-size: auto;
@@ -78,7 +78,8 @@ a:hover{
     font-size: 28px;
     float:left;
     display:block;
-    text-decoration: underline
+    text-decoration: underline;
+    text-align:center;
 }
 
 .Orecord{

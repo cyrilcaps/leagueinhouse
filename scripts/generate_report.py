@@ -9,16 +9,19 @@ from os import listdir, mkdir
 from os.path import isfile, join, dirname, abspath
 import json
 
+import sys
+
 pp = pprint.PrettyPrinter(indent=2)
 
 
-def get_matches(match_directory=None):
+def get_matches(season):
     matches = []
 
-    if match_directory:
-        matches_d = dirname(abspath(__file__)) + "/" + match_directory
+    if season:
+        matches_d = dirname(abspath(__file__)) + "/" + season
     else:
-        matches_d = dirname(abspath(__file__)) + "/season2"
+        print("Invalid or no season found (please use 'season_1' or 'season_2'")
+        sys.exit()
 
     for match in listdir(matches_d):
         with open(matches_d + "/" + match) as m:
@@ -30,29 +33,27 @@ def get_matches(match_directory=None):
 def update_match_results_helper(report, status, team):
     r_s = report['summoners']
     for s in team:
-        if r_s.get(s, None) != None:
-            if not r_s[s].get(status):
-                r_s[s][status] = 0
-            r_s[s][status] += 1
-
-            if not r_s[s].get('games played'):
-                r_s[s]['games played'] = 0
-            r_s[s]['games played'] += 1
-
-            if r_s[s].get('won', 0) > 0:
-                r_s[s]['win rate'] = "{:.2f}%".format(
-                    r_s[s]['won']/r_s[s]['games played'] * 100)
-            else:
-                r_s[s]['win rate'] = "00.00%"
-        else:
+        if not r_s.get(s):
             r_s[s] = {}
             r_s[s]['summoner'] = s
             r_s[s]['lost'] = 0
             r_s[s]['won'] = 0
-            r_s[s]['games played'] = 1
+            r_s[s]['games played'] = 0
             r_s[s]['win rate'] = "00.00%"
 
-            r_s[s][status] += 1
+        if not r_s[s].get(status):
+            r_s[s][status] = 0
+        r_s[s][status] += 1
+
+        if not r_s[s].get('games played'):
+            r_s[s]['games played'] = 0
+        r_s[s]['games played'] += 1
+
+        if r_s[s].get('won', 0) > 0:
+            r_s[s]['win rate'] = "{:.2f}%".format(
+                r_s[s]['won']/r_s[s]['games played'] * 100)
+        else:
+            r_s[s]['win rate'] = "00.00%"
 
     for p1 in team:
         for p2 in team:
@@ -261,11 +262,11 @@ def order_players_by_winrate(report):
     return report
 
 
-def main():
+def main(season):
     report = {'summoners': {}, 'champions': {
         'bans': {}, 'picks': {}, 'total games played': 0}}
 
-    for match in get_matches():
+    for match in get_matches(season):
         m = Match(match)
         # updates statistics for the summoner in each game
         report = update_match_results(
@@ -281,9 +282,10 @@ def main():
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
     report = order_players_by_winrate(report)
-    post_to_server(report, 'season_2')
+    post_to_server(report, season)
     pp.pprint(report)
 
 
 if __name__ == "__main__":
-    main()
+    season = sys.argv[1]
+    main(season)

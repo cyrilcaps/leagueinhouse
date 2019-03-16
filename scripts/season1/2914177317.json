@@ -4,34 +4,44 @@
     "gameId": 2914177317,
     "participantIdentities": [
         {
-            "participantId": 1
+            "participantId": 1,
+            "name": "Aksynial"
         },
         {
-            "participantId": 2
+            "participantId": 2,
+            "name": "Iniki"
         },
         {
-            "participantId": 3
+            "participantId": 3,
+            "name": "Mooogen"
         },
         {
-            "participantId": 4
+            "participantId": 4,
+            "name": "Cha Siu Bill"
         },
         {
-            "participantId": 5
+            "participantId": 5,
+            "name": "Raphib737"
         },
         {
-            "participantId": 6
+            "participantId": 6,
+            "name": "Anjou"
         },
         {
-            "participantId": 7
+            "participantId": 7,
+            "name": "BladesVengeance"
         },
         {
-            "participantId": 8
+            "participantId": 8,
+            "name": "Reved"
         },
         {
-            "participantId": 9
+            "participantId": 9,
+            "name": "Philantly"
         },
         {
-            "participantId": 10
+            "participantId": 10,
+            "name": "Shooeye"
         }
     ],
     "gameVersion": "8.23.254.717",

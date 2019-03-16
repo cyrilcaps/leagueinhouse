@@ -54,6 +54,8 @@ class SummonerProfiles extends Component {
             type: "pie",
             showInLegend: false,
             startAngle: 270,
+            creditText: "",
+            creditHref: "",
             dataPoints: [
                 { label: "Lost" , y: lost,color:'red'},
                 { label: "Won", y: won, color:'#003366'}

@@ -46,8 +46,13 @@ def update_match_results_helper(report, status, team):
                 r_s[s]['win rate'] = "00.00%"
         else:
             r_s[s] = {}
-            r_s[s][status] = 1
+            r_s[s]['summoner'] = s
+            r_s[s]['lost'] = 0
+            r_s[s]['won'] = 0
             r_s[s]['games played'] = 1
+            r_s[s]['win rate'] = "00.00%"
+
+            r_s[s][status] += 1
 
     for p1 in team:
         for p2 in team:
@@ -231,6 +236,7 @@ def main():
     report = aggregate_champions_record(report)
     report = aggregate_summoners_records(report)
     post_to_server(report, 'season_2')
+    # pp.pprint(report)
 
 
 if __name__ == "__main__":

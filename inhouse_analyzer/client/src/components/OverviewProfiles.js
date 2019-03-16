@@ -27,8 +27,14 @@ class SummonerProfiles extends Component {
         roles = d['most played roles'], winRate = d['win rate'];
 
     var champ_list = [];
+
+    console.log(summoner);
     for (var i in champs) {
-      let source = champs[i][0] + '.png'
+      let champ_name =
+          champs[i][0].charAt(0).toUpperCase() + champs[i][0].slice(1);
+
+      let source = champ_name + '.png'
+      console.log(source)
       champ_list.push(
           <img className = 'Ochamps' src = {images[source]}>
           </img>)
@@ -48,7 +54,7 @@ class SummonerProfiles extends Component {
     const options = {
         animationEnabled: true,
         title:{
-            "text": "Win Rate:" + winRate
+            "text": "Win Rate: " + winRate
         },
         data:[{
             type: "pie",

@@ -2,6 +2,8 @@ import './App.css';
 
 import React, {Component} from 'react';
 
+import Overview from './components/Overview';
+
 class App extends Component {
   state = {
     response: '',
@@ -43,7 +45,7 @@ class App extends Component {
     let sClass = this.state.summoners ? 'active' : '';
     let cClass = this.state.champions ? 'active' : '';
     return (
-        <div className = 'test'><ul className = 'navbar'><li>
+        <div className = 'main'><ul className = 'navbar'><li>
         <a className = {oClass} href = '#' onClick = {this.activateState.bind(
              this)}>Overview</a>
         </li><li>
@@ -53,10 +55,9 @@ class App extends Component {
         <a className = {cClass} href = '#Champions' onClick =
              {this.activateState.bind(this)}>Champions</a>
         </li>
-        </ul></div>);
+        </ul><Overview data={
+      this.state.response}/></div>);
   }
 }
 
-
-class Overview extends Component {}
 export default App;

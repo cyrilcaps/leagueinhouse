@@ -285,6 +285,16 @@ def order_players_by_winrate(report):
     return report
 
 
+def get_champions_list(report):
+    r_c = report['champions']
+    r_c['champion list'] = []
+    pp.pprint(CHAMPION_IDS)
+    for key in CHAMPION_IDS:
+        r_c['champion list'].append(CHAMPION_IDS[key])
+
+    return report
+
+
 def main(season):
     report = {'summoners': {}, 'champions': {
         'bans': {}, 'picks': {}, 'total games played': 0}}
@@ -308,8 +318,9 @@ def main(season):
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
     report = order_players_by_winrate(report)
+    report = get_champions_list(report)
     post_to_server(report, season)
-    pp.pprint(report['summoners']['Shooeye'])
+    # pp.pprint(report)
 
 
 if __name__ == "__main__":

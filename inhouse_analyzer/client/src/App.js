@@ -17,14 +17,22 @@ class App extends Component {
     const response = await fetch('/api/overview');
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    console.log(body)
     return body;
   };
 
   render() {
-    console.log(this.state)
-    return (<div>hello world</div>);
+    return (<NavBar />);
   }
 }
 
+class NavBar extends Component {
+  state = {active: 'overview'};
+
+  render() {
+    return (<div className = 'nav'><ul className = 'navbar'><li>
+            <a href = '#'>Overview</a></li><li>
+            <a href = '#Summoners'>Summoners</a></li><li>
+            <a href = '#Champions'>Champions</a></li></ul></div>);
+  };
+}
 export default App;

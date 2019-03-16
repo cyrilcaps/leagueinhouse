@@ -122,9 +122,11 @@ def get_supports_from_game(picks):
     t1 = picks[:5]
     t2 = picks[5:]
 
-    picks[get_right_roles(t1)]['role'] = "SUPPORT"
-    picks[get_right_roles(t2)+5]['role'] = "SUPPORT"
-
+    s1 = get_right_roles(t1)
+    s2 = get_right_roles(t2)+5
+    # print(picks[s1], picks[s2])
+    picks[s1]['role'] = "SUPPORT"
+    picks[s2]['role'] = "SUPPORT"
     return picks
 
 
@@ -299,12 +301,15 @@ def main(season):
 
         report = update_summoner_picks_and_roles(
             report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
+
+        # pp.pprint(report['summoners']['Shooeye'])
+
     report = aggregate_champions_record(report)
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
     report = order_players_by_winrate(report)
     post_to_server(report, season)
-    pp.pprint(report)
+    pp.pprint(report['summoners']['Shooeye'])
 
 
 if __name__ == "__main__":

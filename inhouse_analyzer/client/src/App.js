@@ -2,7 +2,9 @@ import './App.css';
 
 import React, {Component} from 'react';
 
+import Champions from './components/Champions';
 import Overview from './components/Overview';
+import Summoners from './components/Summoners';
 
 class App extends Component {
   state = {
@@ -46,21 +48,36 @@ class App extends Component {
     let oClass = this.state.overview ? 'active' : '';
     let sClass = this.state.summoners ? 'active' : '';
     let cClass = this.state.champions ? 'active' : '';
-    return (
-        <div className = 'main'><ul className = 'navbar'><li>
-        <a className = {oClass} href = '#' onClick = {this.activateState.bind(
-             this)}>Overview</a >
-        </li><li>
-        <a className = {sClass} href = '#Summoners' onClick =
-             {this.activateState.bind(this)}>Summoners</a>
-        </li><li>
-        <a className = {cClass} href = '#Champions' onClick =
-             {this.activateState.bind(this)}>Champions</a>
-        </li>
-        </ul><Overview data = {
-          this.state.response
-        } /></div>);
-  }
-}
 
-export default App;
+    let elementToLoad = [];
+    // elementToLoad.push(<Overview data = {
+    //   this.state.response} />);
+    // elementToLoad.push(<Champions data = {
+    //   this.state.response}/>);
+    if (this.state.active === 'overview') {
+      elementToLoad.push(<Overview data = {
+        this.state.response
+      } />);
+      }else if(this.state.active === 'champions'){
+          elementToLoad.push(<Champions data = {this.state.response}/>);
+    } else {
+          elementToLoad.push(<Summoners data = {
+        this.state.response}/>);
+      }
+      return (
+          <div className = 'main'><ul className = 'navbar'><li>
+          <a className = {oClass} href = '#' onClick = {this.activateState.bind(
+               this)}>Overview</a >
+        </li><li>
+          <a className = {sClass} href = '#Summoners' onClick =
+               {this.activateState.bind(this)}>Summoners</a>
+        </li><li>
+          <a className = {cClass} href = '#Champions' onClick =
+               {this.activateState.bind(this)}>Champions</a>
+        </li>
+          </ul>{elementToLoad}
+        </div>);
+  }
+  }
+
+  export default App;

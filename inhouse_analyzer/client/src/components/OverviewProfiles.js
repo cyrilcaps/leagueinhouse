@@ -30,7 +30,6 @@ class SummonerProfiles extends Component {
         roles = d['most played roles'], winRate = d['win rate'];
 
     var champ_list = [];
-
     for (var i in champs) {
       let champ_name =
           champs[i][0].charAt(0).toUpperCase() + champs[i][0].slice(1);

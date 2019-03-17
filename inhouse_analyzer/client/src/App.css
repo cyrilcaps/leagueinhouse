@@ -71,6 +71,7 @@ a:hover{
 .userProfiles>div{
     margin: 1% 1%;
 }
+
 .OsummName{
     font-weight: bold;
     margin-top: 1%;
@@ -110,4 +111,38 @@ a:hover{
 
 .Orole{
     width:50px;
+}
+
+.CProfiles{
+    width:200px;
+    height:200%;
+    background: white;
+    display: inline-block;
+    margin: 10px 10px 10px 10px;
+    border: 1px solid;
+    box-shadow: -2.5px -5px #888888;
+    border-radius: 5px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+.Cpicture{
+    margin-top: 5px;
+    width:100%;
+    height:120px;
+    margin-bottom: 5px;
+}
+
+.Cchamp{
+    width:100%;
+    height:95%;
+}
+
+.Cname{
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 28px;
+}
+
+.Crates{
+    font-size: 22px;
 }

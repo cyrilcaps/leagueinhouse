@@ -316,7 +316,8 @@ def aggregate_champions_records(report):
 
     r_c["champions"] = []
     for c in r_c:
-        r_c['champions'].append(c)
+        if c != "champions":
+            r_c['champions'].append(c)
     return report
 
 

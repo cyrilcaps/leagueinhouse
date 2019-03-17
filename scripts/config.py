@@ -77,7 +77,7 @@ CHAMPION_IDS = {
     '38': 'Kassadin',
     '55': 'Katarina',
     '10': 'Kayle',
-    '141': 'kayn',
+    '141': 'Kayn',
     '85': 'Kennen',
     '121': 'Khazix',
     '203': 'Kindred',

@@ -1,0 +1,4 @@
+[submodule "inhouse_analyzer"]
+	path = inhouse_analyzer
+	url = https://github.com/Raphib737/inhouse_analyzer
+	branch = master

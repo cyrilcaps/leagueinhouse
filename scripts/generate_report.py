@@ -76,34 +76,28 @@ def update_match_results(report, winners, losers):
     return report
 
 
-def update_champions(report, champ_picks, bans):
+def update_champions(report, all_picks, participants, winning_team, bans):
     r_c = report['champions']
-    r_c['total games played'] += 1
+
+    picks = merge_participants_picks_results(
+        all_picks, participants, winning_team)
+    picks = get_supports_from_game(picks)
+
+    for c in r_c:
+        r_c[c]['games total'] += 1
+
+    for p in picks:
+        r_c[p['champion']]['times picked'] += 1
+        if p['result'] == "won":
+            r_c[p['champion']]['won'] += 1
+        else:
+            r_c[p['champion']]['lost'] += 1
+        r_c[p['champion']]['role'].add(p['role'])
 
     if bans:
         for b in bans:
             c = CHAMPION_IDS[str(b)]
-            if r_c['bans'].get(c):
-                r_c['bans'][c]['count'] += 1
-            else:
-                r_c['bans'][c] = {}
-                r_c['bans'][c]['count'] = 1
-
-        for champ in r_c['bans']:
-            r_c['bans'][champ]['ban rate'] = "{:.2f}%".format(
-                (r_c['bans'][champ]['count'] / r_c['total games played']) * 100)
-
-    for c_p in champ_picks:
-        c_n = CHAMPION_IDS[str(c_p['champ_id'])]
-        if r_c['picks'].get(c_n):
-            r_c['picks'][c_n]['count'] += 1
-        else:
-            r_c['picks'][c_n] = {}
-            r_c['picks'][c_n]['count'] = 1
-
-    for champ in r_c['picks']:
-        r_c['picks'][champ]['pick rate'] = "{:.2f}%".format(
-            r_c['picks'][champ]['count'] / r_c['total games played'] * 100)
+            r_c[c]['times banned'] += 1
 
     return report
 
@@ -177,7 +171,7 @@ def merge_participants_picks_results(picks, participants, winning_team):
     return d
 
 
-def aggregate_champions_record(report):
+def aggregate_summoners_champions_record(report):
     r_s = report['summoners']
 
     for s in r_s:
@@ -285,20 +279,50 @@ def order_players_by_winrate(report):
     return report
 
 
-def get_champions_list(report):
-    r_c = report['champions']
-    r_c['champion list'] = []
-    pp.pprint(CHAMPION_IDS)
-    for key in CHAMPION_IDS:
-        r_c['champion list'].append(CHAMPION_IDS[key])
+def get_all_champions(report):
+    for k in CHAMPION_IDS:
+        report['champions'][CHAMPION_IDS[k]] = {
+            "times banned": 0,
+            "times picked": 0,
+            "games total": 0,
+            "won": 0,
+            "lost": 0,
+            "win rate": "00.00%",
+            "ban rate": "00.00%",
+            "pick rate": "00.00%",
+            "role": set([])
+        }
+    return report
 
+
+def aggregate_champions_records(report):
+    r_c = report['champions']
+    unused_champs = []
+    for c in r_c:
+        if r_c[c]['times banned'] == 0 and r_c[c]['times picked'] == 0:
+            unused_champs.append(c)
+        if r_c[c]['won'] > 0:
+            r_c[c]['win rate'] = "{:.2f}%".format(
+                r_c[c]['won']/r_c[c]['times picked'] * 100)
+
+        r_c[c]['pick rate'] = "{:.2f}%".format(
+            r_c[c]['times picked']/r_c[c]['games total'] * 100)
+        r_c[c]['ban rate'] = "{:.2f}%".format(
+            r_c[c]['times banned']/r_c[c]['games total'] * 100)
+
+        r_c[c]['role'] = list(r_c[c]['role'])
+    for c in unused_champs:
+        del r_c[c]
+
+    r_c["champions"] = []
+    for c in r_c:
+        r_c['champions'].append(c)
     return report
 
 
 def main(season):
-    report = {'summoners': {}, 'champions': {
-        'bans': {}, 'picks': {}, 'total games played': 0}}
-
+    report = {'summoners': {}, 'champions': {}}
+    report = get_all_champions(report)
     for match in get_matches(season):
         m = Match(match)
         # updates statistics for the summoner in each game
@@ -306,21 +330,19 @@ def main(season):
         report = update_match_results(
             report, m.get_winning_team(), m.get_losing_team())
 
-        # updates the ban rates of champions and such
-        report = update_champions(report, m.get_all_picks(), m.get_all_bans())
-
         report = update_summoner_picks_and_roles(
             report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
 
-        # pp.pprint(report['summoners']['Shooeye'])
+        # updates the ban rates of champions and such
+        report = update_champions(report, m.get_all_picks(
+        ), m.get_participants(), m.get_winning_team(), m.get_all_bans())
 
-    report = aggregate_champions_record(report)
+    report = aggregate_summoners_champions_record(report)
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
     report = order_players_by_winrate(report)
-    report = get_champions_list(report)
+    report = aggregate_champions_records(report)
     post_to_server(report, season)
-    # pp.pprint(report)
 
 
 if __name__ == "__main__":

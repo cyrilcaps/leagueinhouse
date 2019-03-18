@@ -31,7 +31,7 @@ def sync_custom_match_history():
 def get_local_custom_match_history():
     matches = {}
     matches_d = dirname(abspath(__file__)) + \
-        "/match_data"
+        "/season_2"
 
     return [int(f.split(".")[0]) for f in listdir(
         matches_d) if isfile(join(matches_d, f))]
@@ -39,7 +39,7 @@ def get_local_custom_match_history():
 
 def post_local_match_history(match_id, match):
     matches_d = dirname(abspath(__file__)) + \
-        "/match_data"
+        "/season_2"
     with open('{}/{}.json'.format(matches_d, match_id), 'w') as outfile:
         json.dump(match, outfile)
 

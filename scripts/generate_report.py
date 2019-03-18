@@ -260,7 +260,7 @@ def takeSecond(elem):
 
 def post_to_server(report, file_name):
     DEST = dirname(dirname(abspath(__file__))) + \
-        "/inhouse_analyzer/overview_data"
+        "/overview_data"
 
     with open("{}/{}".format(DEST, file_name+".json"), 'w') as outfile:
         json.dump(report, outfile)

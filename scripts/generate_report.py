@@ -328,7 +328,8 @@ def aggregate_champions_records(report):
 def main(season):
     report = {'summoners': {}, 'champions': {}}
     report = get_all_champions(report)
-    for match in get_matches(season):
+    matches = get_matches(season)
+    for match in matches:
         m = Match(match)
         # updates statistics for the summoner in each game
         print(m.match_id)
@@ -348,6 +349,7 @@ def main(season):
     report = order_players_by_winrate(report)
     report = aggregate_champions_records(report)
     post_to_server(report, season)
+    print("processed {} matches for {}".format(len(matches), season))
 
 
 if __name__ == "__main__":

@@ -315,6 +315,7 @@ def aggregate_champions_records(report):
             r_c[c]['times banned']/r_c[c]['games total'] * 100)
 
         r_c[c]['role'] = list(r_c[c]['role'])
+
     for c in unused_champs:
         del r_c[c]
 
@@ -322,6 +323,18 @@ def aggregate_champions_records(report):
     for c in r_c:
         if c != "champions":
             r_c['champions'].append(c)
+
+    r_c['banned champions'] = []
+    r_c['picked champions'] = []
+    for c in r_c:
+        if "champions" not in c:
+            r_c['banned champions'].append((c, r_c[c]['times banned']))
+            r_c['picked champions'].append((c, r_c[c]['times picked']))
+
+    r_c['banned champions'] = sorted(
+        r_c['banned champions'], key=takeSecond, reverse=True)
+    r_c['picked champions'] = sorted(
+        r_c['picked champions'], key=takeSecond, reverse=True)
     return report
 
 
@@ -332,7 +345,7 @@ def main(season):
     for match in matches:
         m = Match(match)
         # updates statistics for the summoner in each game
-        print(m.match_id)
+        # print(m.match_id)
         report = update_match_results(
             report, m.get_winning_team(), m.get_losing_team())
 
@@ -349,6 +362,7 @@ def main(season):
     report = order_players_by_winrate(report)
     report = aggregate_champions_records(report)
     post_to_server(report, season)
+    # pp.pprint(report['champions'])
     print("processed {} matches for {}".format(len(matches), season))
 
 

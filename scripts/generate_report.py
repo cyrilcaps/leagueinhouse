@@ -140,7 +140,7 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
 
         if not r_s[pick['summoner']]['role'].get(pick['role']):
             r_s[pick['summoner']]['role'][pick['role']] = {
-                'pick': 0, 'role rate': 0, 'champions': []}
+                'pick': 0, 'role rate': 0, 'win rate': 0, 'champions': []}
 
         r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
         r_s[pick['summoner']]['role'][pick['role']
@@ -338,6 +338,23 @@ def aggregate_champions_records(report):
     return report
 
 
+def aggregate_role_records(report):
+    r_s = report['summoners']
+    for s in r_s:
+        if s not in ['sorted_summoners']:
+            for r in r_s[s]['role']:
+                games_won = 0
+                games_played = 0
+                for champ in r_s[s]['role'][r]['champions']:
+                    won = r_s[s]['role'][r]['champions'][champ]['won']
+                    lost = r_s[s]['role'][r]['champions'][champ]['lost']
+                    games_won += won
+                    games_played += won + lost
+                r_s[s]['role'][r]['win rate'] = "{:.2f}%".format(
+                    games_won / games_played*100)
+    return report
+
+
 def main(season):
     report = {'summoners': {}, 'champions': {}}
     report = get_all_champions(report)
@@ -361,8 +378,9 @@ def main(season):
     report = aggregate_played_roles(report)
     report = order_players_by_winrate(report)
     report = aggregate_champions_records(report)
+    report = aggregate_role_records(report)
     post_to_server(report, season)
-    # pp.pprint(report['champions'])
+    # pp.pprint(report['summoners'])
     print("processed {} matches for {}".format(len(matches), season))
 
 

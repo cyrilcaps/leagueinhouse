@@ -16,16 +16,20 @@ pp = pprint.PrettyPrinter(indent=2)
 
 def get_matches(season):
     matches = []
-
-    if season:
-        matches_d = dirname(abspath(__file__)) + "/" + season
+    seasons = ['season_1', 'season_2']
+    if season in seasons:
+        matches_ds = [dirname(abspath(__file__)) + "/" + season]
+    elif season == 'overall':
+        matches_ds = [dirname(abspath(__file__)) + "/season_1"]
+        matches_ds + [dirname(abspath(__file__)) + "/season_2"]
     else:
         print("Invalid or no season found (please use 'season_1' or 'season_2'")
         sys.exit()
 
-    for match in listdir(matches_d):
-        with open(matches_d + "/" + match) as m:
-            matches.append(json.load(m))
+    for matches_d in matches_ds:
+        for match in listdir(matches_d):
+            with open(matches_d + "/" + match) as m:
+                matches.append(json.load(m))
 
     return matches
 
@@ -260,7 +264,7 @@ def takeSecond(elem):
 
 def post_to_server(report, file_name):
     DEST = dirname(dirname(abspath(__file__))) + \
-        "/overview_data"
+        "/inhouse_analyzer/overview_data"
 
     with open("{}/{}".format(DEST, file_name+".json"), 'w') as outfile:
         json.dump(report, outfile)

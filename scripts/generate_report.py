@@ -21,7 +21,7 @@ def get_matches(season):
         matches_ds = [dirname(abspath(__file__)) + "/" + season]
     elif season == 'overall':
         matches_ds = [dirname(abspath(__file__)) + "/season_1"]
-        matches_ds + [dirname(abspath(__file__)) + "/season_2"]
+        matches_ds = matches_ds + [dirname(abspath(__file__)) + "/season_2"]
     else:
         print("Invalid or no season found (please use 'season_1' or 'season_2'")
         sys.exit()

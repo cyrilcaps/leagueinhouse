@@ -322,7 +322,10 @@ def aggregate_champions_records(report):
     r_c["champions"] = []
     for c in r_c:
         if c != "champions":
-            r_c['champions'].append(c)
+            r_c['champions'].append((c, int(float(r_c[c]['ban rate'][:-1]))))
+
+    r_c['champions'] = sorted(r_c['champions'], key=takeSecond, reverse=True)
+    r_c['champions'] = [x[0] for x in r_c['champions']]
 
     r_c['banned champions'] = []
     r_c['picked champions'] = []

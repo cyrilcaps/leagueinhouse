@@ -362,7 +362,7 @@ def main(season):
     for match in matches:
         m = Match(match)
         # updates statistics for the summoner in each game
-        # print(m.match_id)
+        print(m.match_id)
         report = update_match_results(
             report, m.get_winning_team(), m.get_losing_team())
 

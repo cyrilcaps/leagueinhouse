@@ -1561,15 +1561,15 @@
     "participantIdentities": [
         {
             "participantId": 1,
-            "name": "Raphib737"
-        },
-        {
-            "participantId": 2,
             "name": "Iniki"
         },
         {
-            "participantId": 3,
+            "participantId": 2,
             "name": "Reved"
+        },
+        {
+            "participantId": 3,
+            "name": "Raphib737"
         },
         {
             "participantId": 4,

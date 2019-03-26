@@ -23,7 +23,8 @@ def get_matches(season):
         matches_ds = [dirname(abspath(__file__)) + "/season_1"]
         matches_ds = matches_ds + [dirname(abspath(__file__)) + "/season_2"]
     else:
-        print("Invalid or no season found (please use 'season_1' or 'season_2'")
+        print(
+            "Invalid or no season found (please use 'season_1' or 'season_2'")
         sys.exit()
 
     for matches_d in matches_ds:
@@ -55,7 +56,7 @@ def update_match_results_helper(report, status, team):
 
         if r_s[s].get('won', 0) > 0:
             r_s[s]['win rate'] = "{:.2f}%".format(
-                r_s[s]['won']/r_s[s]['games played'] * 100)
+                r_s[s]['won'] / r_s[s]['games played'] * 100)
         else:
             r_s[s]['win rate'] = "00.00%"
 
@@ -67,7 +68,10 @@ def update_match_results_helper(report, status, team):
 
                 if not r_s[p1]['partners'].get(p2):
                     r_s[p1]['partners'][p2] = {
-                        "won": 0, "lost": 0, "win rate": 0}
+                        "won": 0,
+                        "lost": 0,
+                        "win rate": 0
+                    }
 
                 r_s[p1]['partners'][p2][status] += 1
 
@@ -83,8 +87,8 @@ def update_match_results(report, winners, losers):
 def update_champions(report, all_picks, participants, winning_team, bans):
     r_c = report['champions']
 
-    picks = merge_participants_picks_results(
-        all_picks, participants, winning_team)
+    picks = merge_participants_picks_results(all_picks, participants,
+                                             winning_team)
     picks = get_supports_from_game(picks)
 
     for c in r_c:
@@ -121,16 +125,17 @@ def get_supports_from_game(picks):
     t2 = picks[5:]
 
     s1 = get_right_roles(t1)
-    s2 = get_right_roles(t2)+5
+    s2 = get_right_roles(t2) + 5
     # print(picks[s1], picks[s2])
     picks[s1]['role'] = "SUPPORT"
     picks[s2]['role'] = "SUPPORT"
     return picks
 
 
-def update_summoner_picks_and_roles(report, all_picks, participants, winning_team):
-    picks = merge_participants_picks_results(
-        all_picks, participants, winning_team)
+def update_summoner_picks_and_roles(report, all_picks, participants,
+                                    winning_team):
+    picks = merge_participants_picks_results(all_picks, participants,
+                                             winning_team)
     picks = get_supports_from_game(picks)
 
     r_s = report['summoners']
@@ -140,17 +145,23 @@ def update_summoner_picks_and_roles(report, all_picks, participants, winning_tea
 
         if not r_s[pick['summoner']]['role'].get(pick['role']):
             r_s[pick['summoner']]['role'][pick['role']] = {
-                'pick': 0, 'role rate': 0, 'win rate': 0, 'champions': []}
+                'pick': 0,
+                'role rate': 0,
+                'win rate': 0,
+                'champions': []
+            }
 
         r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
-        r_s[pick['summoner']]['role'][pick['role']
-                                      ]['champions'].append((pick['champion'], pick['result'], pick['kda'], pick['vision score'], pick['game duration']))
+        r_s[pick['summoner']]['role'][pick['role']]['champions'].append(
+            (pick['champion'], pick['result'], pick['kda'],
+             pick['vision score'], pick['game duration']))
 
     for summoner in r_s:
         if r_s[summoner] != {}:
             for role in r_s[summoner]['role']:
                 r_s[summoner]['role'][role]['role rate'] = "{:.2f}%".format(
-                    r_s[summoner]['role'][role].get('pick', 0) / r_s[summoner]['games played'] * 100)
+                    r_s[summoner]['role'][role].get(
+                        'pick', 0) / r_s[summoner]['games played'] * 100)
     return report
 
 
@@ -181,8 +192,11 @@ def aggregate_summoners_champions_record(report):
     for s in r_s:
         for r in r_s[s]['role']:
             average_kda_per_champ = {}
-            averages_per_role = {"score": 0,
-                                 "games played": 0, "game duration": 0}
+            averages_per_role = {
+                "score": 0,
+                "games played": 0,
+                "game duration": 0
+            }
 
             champs = [(c[0], c[1]) for c in r_s[s]['role'][r]['champions']]
 
@@ -194,8 +208,9 @@ def aggregate_summoners_champions_record(report):
                 temp[c_r[0]][c_r[1]] = champs[c_r]
 
             for champ in temp:
-                temp[champ]['win rate'] = "{:.2f}%".format(temp[champ]['won'] /
-                                                           (temp[champ]['won'] + temp[champ]['lost']) * 100)
+                temp[champ]['win rate'] = "{:.2f}%".format(
+                    temp[champ]['won'] /
+                    (temp[champ]['won'] + temp[champ]['lost']) * 100)
 
             for c in r_s[s]['role'][r]['champions']:
                 averages_per_role["score"] += c[3]
@@ -206,7 +221,10 @@ def aggregate_summoners_champions_record(report):
 
                 if not average_kda_per_champ.get(c[0]):
                     average_kda_per_champ[c[0]] = {
-                        "kills": 0, "deaths": 0, "assists": 0}
+                        "kills": 0,
+                        "deaths": 0,
+                        "assists": 0
+                    }
                 average_kda_per_champ[c[0]]['kills'] += k
                 average_kda_per_champ[c[0]]['deaths'] += d
                 average_kda_per_champ[c[0]]['assists'] += a
@@ -214,7 +232,8 @@ def aggregate_summoners_champions_record(report):
                 averages_per_role['score'] / averages_per_role['games played'])
 
             r_s[s]['role'][r]["average game duration"] = "{:.2f}".format(
-                averages_per_role['game duration'] / averages_per_role['games played'] / 60)
+                averages_per_role['game duration'] /
+                averages_per_role['games played'] / 60)
 
             r_s[s]['role'][r]['champions'] = temp
 
@@ -226,7 +245,9 @@ def aggregate_summoners_records(report):
     for s in r_s:
         for p in r_s[s]['partners']:
             r_s[s]['partners'][p]['win rate'] = "{:.2f}%".format(
-                r_s[s]['partners'][p]['won']/(r_s[s]['partners'][p]['lost'] + r_s[s]['partners'][p]['won']) * 100)
+                r_s[s]['partners'][p]['won'] /
+                (r_s[s]['partners'][p]['lost'] + r_s[s]['partners'][p]['won'])
+                * 100)
 
     return report
 
@@ -266,7 +287,7 @@ def post_to_server(report, file_name):
     DEST = dirname(dirname(abspath(__file__))) + \
         "/inhouse_analyzer/overview_data"
 
-    with open("{}/{}".format(DEST, file_name+".json"), 'w') as outfile:
+    with open("{}/{}".format(DEST, file_name + ".json"), 'w') as outfile:
         json.dump(report, outfile)
 
 
@@ -275,9 +296,9 @@ def order_players_by_winrate(report):
     ordered_keys = []
     for s in r_s:
         ordered_keys.append(
-            (s, r_s[s]['won']/(r_s[s]['won'] + r_s[s]['lost']), r_s[s]['games played']))
-    ordered_keys = sorted(
-        ordered_keys, key=takeSecond, reverse=True)
+            (s, r_s[s]['won'] / (r_s[s]['won'] + r_s[s]['lost']),
+             r_s[s]['games played']))
+    ordered_keys = sorted(ordered_keys, key=takeSecond, reverse=True)
 
     o_l = []
     n_l = []
@@ -316,12 +337,12 @@ def aggregate_champions_records(report):
             unused_champs.append(c)
         if r_c[c]['won'] > 0:
             r_c[c]['win rate'] = "{:.2f}%".format(
-                r_c[c]['won']/r_c[c]['times picked'] * 100)
+                r_c[c]['won'] / r_c[c]['times picked'] * 100)
 
         r_c[c]['pick rate'] = "{:.2f}%".format(
-            r_c[c]['times picked']/r_c[c]['games total'] * 100)
+            r_c[c]['times picked'] / r_c[c]['games total'] * 100)
         r_c[c]['ban rate'] = "{:.2f}%".format(
-            r_c[c]['times banned']/r_c[c]['games total'] * 100)
+            r_c[c]['times banned'] / r_c[c]['games total'] * 100)
 
         r_c[c]['role'] = list(r_c[c]['role'])
 
@@ -362,8 +383,10 @@ def aggregate_role_records(report):
                     lost = r_s[s]['role'][r]['champions'][champ]['lost']
                     games_won += won
                     games_played += won + lost
+                r_s[s]['role'][r]['won'] = games_won
+                r_s[s]['role'][r]['lost'] = games_played - games_won
                 r_s[s]['role'][r]['win rate'] = "{:.2f}%".format(
-                    games_won / games_played*100)
+                    games_won / games_played * 100)
     return report
 
 
@@ -375,15 +398,17 @@ def main(season):
         m = Match(match)
         # updates statistics for the summoner in each game
         print(m.match_id)
-        report = update_match_results(
-            report, m.get_winning_team(), m.get_losing_team())
+        report = update_match_results(report, m.get_winning_team(),
+                                      m.get_losing_team())
 
-        report = update_summoner_picks_and_roles(
-            report, m.get_all_picks(), m.get_participants(), m.get_winning_team())
+        report = update_summoner_picks_and_roles(report, m.get_all_picks(),
+                                                 m.get_participants(),
+                                                 m.get_winning_team())
 
         # updates the ban rates of champions and such
-        report = update_champions(report, m.get_all_picks(
-        ), m.get_participants(), m.get_winning_team(), m.get_all_bans())
+        report = update_champions(report, m.get_all_picks(),
+                                  m.get_participants(), m.get_winning_team(),
+                                  m.get_all_bans())
 
     report = aggregate_summoners_champions_record(report)
     report = aggregate_summoners_records(report)

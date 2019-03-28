@@ -3,7 +3,6 @@ pp = pprint.PrettyPrinter(indent=2)
 
 
 class Match:
-
     def __init__(self, match):
         self.data = match
         self.set_participants(match['participantIdentities'])
@@ -17,10 +16,25 @@ class Match:
 
         self.all_picks = []
         for b in match['participants']:
-            self.all_picks.append({'champ_id': b['championId'], 'role': b['timeline'].get(
-                'lane', 'Role not determined'), 'participant_id': b['participantId'], "kda": "{}/{}/{}".format(b['stats']['kills'], b['stats']['deaths'], b['stats']['assists']), 'vision score': b['stats']['visionScore'], "game duration": self.data['gameDuration'], "minions killed": b['stats']['totalMinionsKilled']})
+            self.all_picks.append({
+                'champ_id':
+                b['championId'],
+                'role':
+                b['timeline'].get('lane', 'Role not determined'),
+                'participant_id':
+                b['participantId'],
+                "kda":
+                "{}/{}/{}".format(b['stats']['kills'], b['stats']['deaths'],
+                                  b['stats']['assists']),
+                'vision score':
+                b['stats']['visionScore'],
+                "game duration":
+                self.data['gameDuration'],
+                "minions killed":
+                b['stats']['totalMinionsKilled']
+            })
 
-        self.blue_picks = self.all_picks[: 5]
+        self.blue_picks = self.all_picks[:5]
         self.red_picks = self.all_picks[5:]
 
     def get_blue_bans(self):
@@ -69,6 +83,23 @@ class Match:
             return self.red_team
         else:
             return ["winning team can not be determined"]
+
+    def get_match_ups(self):
+        d = []
+        for i in range(len(self.data['participantIdentities'])):
+            name = self.data['participantIdentities'][i]['name']
+            s = self.data['participants'][i]
+            d.append({
+                "name": name,
+                "champ": s['championId'],
+                "assists": s['stats']['assists'],
+                "kills": s['stats']['kills'],
+                "deaths": s['stats']['deaths'],
+                "role": s['timeline']['lane'],
+                "cs": s['stats']['totalMinionsKilled']
+            })
+
+        print(self.get_teams())
 
     def set_match_results(self):
         l_t = "undetermined"

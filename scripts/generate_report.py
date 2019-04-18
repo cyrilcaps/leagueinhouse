@@ -303,7 +303,7 @@ def order_players_by_winrate(report):
     o_l = []
     n_l = []
     for x in ordered_keys:
-        if x[2] < 3:
+        if x[2] < 5:
             n_l.append(x)
         else:
             o_l.append(x)

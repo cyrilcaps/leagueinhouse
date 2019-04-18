@@ -1,4 +1,6 @@
 RIOT_API_KEY = "RGAPI-4000984e-4f3a-4061-90c0-13b8c4cf6ed0"
+RIOT_API_KEY = "RGAPI-5a821b87-e1e4-4d9e-bdd6-28bbed3a658a"
+
 RIOT_GAMES_LINK = "https://na1.api.riotgames.com"
 RIOT_GET_MATCHES = "/lol/match/v4/matchlists/by-account/"
 RIOT_GET_MATCH_DETAILS = "/lol/match/v4/matches/"
@@ -49,7 +51,10 @@ SEASON_TWO_MATCH_IDS = [
     3009550457,
     3009693407,
     3009536996,
-    3009457499
+    3009457499,
+    3020582700,
+    3020582917,
+    3020583084
 ]
 
 SUMMONERS = [

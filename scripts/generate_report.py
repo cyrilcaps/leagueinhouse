@@ -476,7 +476,7 @@ def main(season):
     report = order_players_by_winrate(report)
     report = aggregate_champions_records(report)
     report = aggregate_role_records(report)
-    # post_to_server(report, season)
+    post_to_server(report, season)
 
     print("processed {} matches for {}".format(len(matches), season))
 

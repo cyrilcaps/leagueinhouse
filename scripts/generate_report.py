@@ -133,7 +133,7 @@ def get_supports_from_game(picks):
 
 
 def update_summoner_picks_and_roles(report, all_picks, participants,
-                                    winning_team):
+                                    winning_team, matchups):
     picks = merge_participants_picks_results(all_picks, participants,
                                              winning_team)
     picks = get_supports_from_game(picks)
@@ -151,10 +151,38 @@ def update_summoner_picks_and_roles(report, all_picks, participants,
                 'champions': []
             }
 
+        versus = {}
+        for p in matchups[pick['role']]:
+            if p['summoner'] != pick['summoner']:
+                versus = {
+                    "champion":
+                    CHAMPION_IDS[str(p['champ'])],
+                    "result":
+                    p['result'],
+                    "score":
+                    '{}/{}/{}'.format(
+                        str(p['kills']), str(p['deaths']), str(p['assists'])),
+                    "vision":
+                    p['vision'],
+                    "summoner":
+                    p['summoner'],
+                    "game length":
+                    pick['game duration']
+                }
+
         r_s[pick['summoner']]['role'][pick['role']]['pick'] += 1
+
+        sum_data = {
+            "summoner": pick['summoner'],
+            "champion": pick['champion'],
+            "result": pick['result'],
+            "score": pick['kda'],
+            "vision": pick['vision score'],
+            "game length": pick['game duration']
+        }
+
         r_s[pick['summoner']]['role'][pick['role']]['champions'].append(
-            (pick['champion'], pick['result'], pick['kda'],
-             pick['vision score'], pick['game duration']))
+            (sum_data, versus))
 
     for summoner in r_s:
         if r_s[summoner] != {}:
@@ -195,13 +223,16 @@ def aggregate_summoners_champions_record(report):
             averages_per_role = {
                 "score": 0,
                 "games played": 0,
-                "game duration": 0
+                "game duration": 0,
             }
+            match_history = {}
 
-            champs = [(c[0], c[1]) for c in r_s[s]['role'][r]['champions']]
+            p_r = [c[0] for c in r_s[s]['role'][r]['champions']]
+            p_rec = [(c['champion'], c['result']) for c in p_r]
 
-            champs = Counter(champs)
+            champs = Counter(p_rec)
             temp = {}
+
             for c_r in champs:
                 if not temp.get(c_r[0]):
                     temp[c_r[0]] = {"won": 0, "lost": 0}
@@ -213,21 +244,49 @@ def aggregate_summoners_champions_record(report):
                     (temp[champ]['won'] + temp[champ]['lost']) * 100)
 
             for c in r_s[s]['role'][r]['champions']:
-                averages_per_role["score"] += c[3]
+                averages_per_role["score"] += c[0]['vision']
                 averages_per_role["games played"] += 1
-                averages_per_role['game duration'] += c[4]
+                averages_per_role['game duration'] += c[0]['game length']
 
-                k, d, a = list(map(int, c[2].split("/")))
+                k, d, a = list(map(int, c[0]['score'].split("/")))
 
-                if not average_kda_per_champ.get(c[0]):
-                    average_kda_per_champ[c[0]] = {
+                if not average_kda_per_champ.get(c[0]['champion']):
+                    average_kda_per_champ[c[0]['champion']] = {
                         "kills": 0,
                         "deaths": 0,
-                        "assists": 0
+                        "assists": 0,
+                        "games played": 0
                     }
-                average_kda_per_champ[c[0]]['kills'] += k
-                average_kda_per_champ[c[0]]['deaths'] += d
-                average_kda_per_champ[c[0]]['assists'] += a
+
+                average_kda_per_champ[c[0]['champion']]['kills'] += k
+                average_kda_per_champ[c[0]['champion']]['deaths'] += d
+                average_kda_per_champ[c[0]['champion']]['assists'] += a
+                average_kda_per_champ[c[0]['champion']]['games played'] += 1
+
+                # print("c0")
+                # pp.pprint(c[0])
+                # print("c1")
+                # pp.pprint(c[1])
+                # print("--------------------")
+                if not match_history.get(c[0]['champion']):
+                    match_history[c[0]['champion']] = []
+                match_history[c[0]['champion']].append((c[0], c[1]))
+
+            a_k_p_c = average_kda_per_champ
+            for c in a_k_p_c:
+                a_k_p_c[c]['average kills'] = a_k_p_c[c]['kills'] / a_k_p_c[c][
+                    'games played']
+                a_k_p_c[c]['average assists'] = a_k_p_c[c][
+                    'assists'] / a_k_p_c[c]['games played']
+                a_k_p_c[c]['average deaths'] = a_k_p_c[c]['deaths'] / a_k_p_c[
+                    c]['games played']
+
+            for t in temp:
+                for key in a_k_p_c[t]:
+                    temp[t][key] = a_k_p_c[t][key]
+
+                temp[t]['match history'] = match_history.get(t, [])
+
             r_s[s]['role'][r]["average vision score"] = "{:.2f}".format(
                 averages_per_role['score'] / averages_per_role['games played'])
 
@@ -403,7 +462,8 @@ def main(season):
 
         report = update_summoner_picks_and_roles(report, m.get_all_picks(),
                                                  m.get_participants(),
-                                                 m.get_winning_team())
+                                                 m.get_winning_team(),
+                                                 m.get_match_ups())
 
         # updates the ban rates of champions and such
         report = update_champions(report, m.get_all_picks(),
@@ -416,10 +476,11 @@ def main(season):
     report = order_players_by_winrate(report)
     report = aggregate_champions_records(report)
     report = aggregate_role_records(report)
-    post_to_server(report, season)
+    # post_to_server(report, season)
 
-    # pp.pprint(report['summoners'])
     print("processed {} matches for {}".format(len(matches), season))
+
+    #pp.pprint(report['summoners']['Raphib737']['role']['BOTTOM'])
 
 
 if __name__ == "__main__":

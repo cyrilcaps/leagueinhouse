@@ -90,16 +90,51 @@ class Match:
             name = self.data['participantIdentities'][i]['name']
             s = self.data['participants'][i]
             d.append({
-                "name": name,
+                "summoner": name,
                 "champ": s['championId'],
                 "assists": s['stats']['assists'],
                 "kills": s['stats']['kills'],
                 "deaths": s['stats']['deaths'],
                 "role": s['timeline']['lane'],
-                "cs": s['stats']['totalMinionsKilled']
+                "cs": s['stats']['totalMinionsKilled'],
+                "vision": s['stats']['visionScore']
             })
+        t1 = d[:5]
+        t2 = d[5:]
 
-        print(self.get_teams())
+        for t in [t1, t2]:
+            b_p = []
+            for p in t:
+                if p['role'] == "BOTTOM":
+                    b_p.append(p)
+            if b_p[0]['cs'] > b_p[1]['cs']:
+                for t in d:
+                    if t['summoner'] == b_p[1]['summoner']:
+                        t['role'] = "SUPPORT"
+            else:
+                for t in d:
+                    if t['summoner'] == b_p[0]['summoner']:
+                        t['role'] = "SUPPORT"
+
+        w_t = self.get_winning_team()
+        c_t = self.get_teams()
+
+        data = {
+            "MIDDLE": [],
+            "TOP": [],
+            "SUPPORT": [],
+            "BOTTOM": [],
+            "JUNGLE": []
+        }
+
+        for p in d:
+            if p['summoner'] in w_t:
+                p['result'] = "won"
+            else:
+                p['result'] = "lost"
+            data[p['role']].append(p)
+
+        return data
 
     def set_match_results(self):
         l_t = "undetermined"

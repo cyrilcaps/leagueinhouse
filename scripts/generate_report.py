@@ -372,6 +372,24 @@ def order_players_by_winrate(report):
     return report
 
 
+def order_partners_by_winrate(report):
+    r_s = report['summoners']
+
+    for s in r_s:
+        if (s == "sorted_summoners"):
+            continue
+        r_s[s]['sorted_partners'] = []
+        for p in r_s[s]['partners']:
+            r_s_p = r_s[s]['partners'][p]
+            r_s[s]['sorted_partners'].append(
+                (p, 100 * (r_s_p['won'] / (r_s_p['won'] + r_s_p['lost']))))
+
+        r_s[s]['sorted_partners'] = sorted(
+            r_s[s]['sorted_partners'], key=lambda x: x[1])
+
+    return report
+
+
 def get_all_champions(report):
     for k in CHAMPION_IDS:
         report['champions'][CHAMPION_IDS[k]] = {
@@ -474,13 +492,13 @@ def main(season):
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
     report = order_players_by_winrate(report)
+    report = order_partners_by_winrate(report)
     report = aggregate_champions_records(report)
     report = aggregate_role_records(report)
-    post_to_server(report, season)
-
+    #post_to_server(report, season)
+    # pp.pprint(report['summoners']['BladesVengeance']['sorted_partners'])
+    # pp.pprint(report['summoners']['BladesVengeance']['partners'])
     print("processed {} matches for {}".format(len(matches), season))
-
-    #pp.pprint(report['summoners']['Raphib737']['role']['BOTTOM'])
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ pp = pprint.PrettyPrinter(indent=2)
 
 def get_matches(season):
     matches = []
-    seasons = ['season_1', 'season_2']
+    seasons = ['season_1', 'season_2','season_3']
     if season in seasons:
         matches_ds = [dirname(abspath(__file__)) + "/" + season]
     elif season == 'overall':

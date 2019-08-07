@@ -16,7 +16,7 @@ pp = pprint.PrettyPrinter(indent=2)
 
 def get_matches(season):
     matches = []
-    seasons = ['season_1', 'season_2','season_3']
+    seasons = ['season_1', 'season_2', 'season_3']
     if season in seasons:
         matches_ds = [dirname(abspath(__file__)) + "/" + season]
     elif season == 'overall':
@@ -24,7 +24,8 @@ def get_matches(season):
         matches_ds = matches_ds + [dirname(abspath(__file__)) + "/season_2"]
     else:
         print(
-            "Invalid or no season found (please use 'season_1' or 'season_2'")
+            "Invalid or no season found (please use 'season_1' or 'season_2' or season_3"
+        )
         sys.exit()
 
     for matches_d in matches_ds:
@@ -362,7 +363,7 @@ def order_players_by_winrate(report):
     o_l = []
     n_l = []
     for x in ordered_keys:
-        if x[2] < 5:
+        if x[2] < 3:
             n_l.append(x)
         else:
             o_l.append(x)

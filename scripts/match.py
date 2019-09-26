@@ -1,10 +1,12 @@
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
+import datetime
 
 
 class Match:
     def __init__(self, match):
         self.data = match
+        self.date = self.convert_epoch_to_datetime(self.data['gameCreation'])
         self.set_participants(match['participantIdentities'])
         self.match_id = match['gameId']
 
@@ -36,6 +38,12 @@ class Match:
 
         self.blue_picks = self.all_picks[:5]
         self.red_picks = self.all_picks[5:]
+
+    def convert_epoch_to_datetime(self, e_t):
+        return datetime.datetime.fromtimestamp(float(e_t) / 1000.)
+
+    def get_date(self):
+        return self.date
 
     def get_blue_bans(self):
         return self.blue_bans
@@ -90,14 +98,34 @@ class Match:
             name = self.data['participantIdentities'][i]['name']
             s = self.data['participants'][i]
             d.append({
-                "summoner": name,
-                "champ": s['championId'],
-                "assists": s['stats']['assists'],
-                "kills": s['stats']['kills'],
-                "deaths": s['stats']['deaths'],
-                "role": s['timeline']['lane'],
-                "cs": s['stats']['totalMinionsKilled'],
-                "vision": s['stats']['visionScore']
+                "summoner":
+                name,
+                "champ":
+                s['championId'],
+                "assists":
+                s['stats']['assists'],
+                "kills":
+                s['stats']['kills'],
+                "deaths":
+                s['stats']['deaths'],
+                "role":
+                s['timeline']['lane'],
+                "cs":
+                s['stats']['totalMinionsKilled'],
+                "vision":
+                s['stats']['visionScore'],
+                "overall_damage":
+                s['stats']['totalDamageDealt'],
+                "total_champ_damage":
+                s['stats']['totalDamageDealtToChampions'],
+                "total_damage_taken":
+                s['stats']['totalDamageTaken'],
+                "vision_wards_bought":
+                s['stats']['visionWardsBoughtInGame'],
+                "sigh_wards_bought":
+                s['stats']['sightWardsBoughtInGame'],
+                'win':
+                s['stats']['win']
             })
         t1 = d[:5]
         t2 = d[5:]

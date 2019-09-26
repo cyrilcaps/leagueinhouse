@@ -20,8 +20,9 @@ def get_matches(season):
     if season in seasons:
         matches_ds = [dirname(abspath(__file__)) + "/" + season]
     elif season == 'overall':
-        matches_ds = [dirname(abspath(__file__)) + "/season_1"]
-        matches_ds = matches_ds + [dirname(abspath(__file__)) + "/season_2"]
+        matches_ds = []
+        for s in seasons:
+            matches_ds += [dirname(abspath(__file__)) + "/" + s]
     else:
         print(
             "Invalid or no season found (please use 'season_1' or 'season_2' or season_3"
@@ -468,14 +469,36 @@ def aggregate_role_records(report):
     return report
 
 
+def parse_matches(m):
+    match = {}
+    match["date"] = m.get_date()
+
+    match['blue_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_blue_bans()]
+    match['red_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_red_bans()]
+
+    match['blue_picks'] = m.get_teams()['blue']
+    match['red_picks'] = m.get_teams()['red']
+
+    match['winner'] = m.get_winning_team()
+    match['loser'] = m.get_losing_team()
+
+    matchups = m.get_match_ups()
+    for role in matchups:
+        for player in matchups[role]:
+            player['champ'] = CHAMPION_IDS[str(player['champ'])]
+    match['matchups'] = matchups
+    return match
+
+
 def main(season):
-    report = {'summoners': {}, 'champions': {}}
+    report = {'summoners': {}, 'champions': {}, 'match_history': []}
     report = get_all_champions(report)
     matches = get_matches(season)
     for match in matches:
         m = Match(match)
         # updates statistics for the summoner in each game
-        print(m.match_id)
+        pp.pprint(m.match_id)
+        report['match_history'].append(parse_matches(m))
         report = update_match_results(report, m.get_winning_team(),
                                       m.get_losing_team())
 
@@ -489,6 +512,12 @@ def main(season):
                                   m.get_participants(), m.get_winning_team(),
                                   m.get_all_bans())
 
+    report['match_history'] = sorted(
+        report['match_history'], key=lambda m: m['date'], reverse=True)
+
+    for match in report['match_history']:
+        match['date'] = match['date'].strftime("%B %d, %Y %H:%M")
+
     report = aggregate_summoners_champions_record(report)
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)
@@ -496,6 +525,7 @@ def main(season):
     report = order_partners_by_winrate(report)
     report = aggregate_champions_records(report)
     report = aggregate_role_records(report)
+
     post_to_server(report, season)
     # pp.pprint(report['summoners']['BladesVengeance']['sorted_partners'])
     print("processed {} matches for {}".format(len(matches), season))

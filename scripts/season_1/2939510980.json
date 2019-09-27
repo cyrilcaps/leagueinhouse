@@ -404,7 +404,7 @@
             "spell2Id": 4,
             "teamId": 100,
             "timeline": {
-                "lane": "JUNGLE",
+                "lane": "TOP",
                 "participantId": 2,
                 "goldPerMinDeltas": {
                     "30-end": 512.4,

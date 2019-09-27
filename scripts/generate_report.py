@@ -471,7 +471,9 @@ def aggregate_role_records(report):
 
 def parse_matches(m):
     match = {}
-    match["date"] = m.get_date()
+    match['id'] = m.match_id
+    match['date'] = m.get_date()
+    match['game_duration'] = str(round(m.get_game_duration(),2))
 
     match['blue_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_blue_bans()]
     match['red_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_red_bans()]
@@ -481,12 +483,15 @@ def parse_matches(m):
 
     match['winner'] = m.get_winning_team()
     match['loser'] = m.get_losing_team()
+    match['winning_team_color'] = m.winning_team_color
+    match['losing_team_color'] = m.losing_team_color
 
     matchups = m.get_match_ups()
     for role in matchups:
         for player in matchups[role]:
             player['champ'] = CHAMPION_IDS[str(player['champ'])]
     match['matchups'] = matchups
+
     return match
 
 
@@ -516,7 +521,7 @@ def main(season):
         report['match_history'], key=lambda m: m['date'], reverse=True)
 
     for match in report['match_history']:
-        match['date'] = match['date'].strftime("%B %d, %Y %H:%M")
+        match['date'] = match['date'].strftime("%B %d, %Y %I:%M %p")
 
     report = aggregate_summoners_champions_record(report)
     report = aggregate_summoners_records(report)

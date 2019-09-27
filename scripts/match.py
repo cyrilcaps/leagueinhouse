@@ -7,6 +7,7 @@ class Match:
     def __init__(self, match):
         self.data = match
         self.date = self.convert_epoch_to_datetime(self.data['gameCreation'])
+        self.game_duration = self.data['gameDuration']/60
         self.set_participants(match['participantIdentities'])
         self.match_id = match['gameId']
 
@@ -39,6 +40,9 @@ class Match:
         self.blue_picks = self.all_picks[:5]
         self.red_picks = self.all_picks[5:]
 
+    def get_game_duration(self):
+        return self.game_duration
+        
     def convert_epoch_to_datetime(self, e_t):
         return datetime.datetime.fromtimestamp(float(e_t) / 1000.)
 
@@ -122,10 +126,12 @@ class Match:
                 s['stats']['totalDamageTaken'],
                 "vision_wards_bought":
                 s['stats']['visionWardsBoughtInGame'],
-                "sigh_wards_bought":
+                "sight_wards_bought":
                 s['stats']['sightWardsBoughtInGame'],
                 'win':
-                s['stats']['win']
+                s['stats']['win'],
+                'gold_earned':s['stats']['goldEarned'],
+                'wards_killed':s['stats']['wardsKilled']
             })
         t1 = d[:5]
         t2 = d[5:]

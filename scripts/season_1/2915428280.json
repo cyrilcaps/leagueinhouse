@@ -1101,7 +1101,7 @@
             "spell2Id": 4,
             "teamId": 200,
             "timeline": {
-                "lane": "MIDDLE",
+                "lane": "TOP",
                 "participantId": 7,
                 "goldPerMinDeltas": {
                     "0-10": 250.4,

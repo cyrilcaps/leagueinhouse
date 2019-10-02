@@ -7,7 +7,9 @@ class Match:
     def __init__(self, match):
         self.data = match
         self.date = self.convert_epoch_to_datetime(self.data['gameCreation'])
-        self.game_duration = self.data['gameDuration']/60
+        self.game_duration = str(
+            self.data['gameDuration'] // 60) + " Minutes and " + str(
+                self.data['gameDuration'] % 60) + " Seconds"
         self.set_participants(match['participantIdentities'])
         self.match_id = match['gameId']
 
@@ -34,7 +36,15 @@ class Match:
                 "game duration":
                 self.data['gameDuration'],
                 "minions killed":
-                b['stats']['totalMinionsKilled']
+                b['stats']['totalMinionsKilled'],
+                "jungle minions killed":
+                b['stats']['neutralMinionsKilled'],
+                "items": [
+                    b['stats']['item0'], b['stats']['item1'],
+                    b['stats']['item2'], b['stats']['item3'],
+                    b['stats']['item4'], b['stats']['item5'],
+                    b['stats']['item6']
+                ]
             })
 
         self.blue_picks = self.all_picks[:5]
@@ -42,7 +52,7 @@ class Match:
 
     def get_game_duration(self):
         return self.game_duration
-        
+
     def convert_epoch_to_datetime(self, e_t):
         return datetime.datetime.fromtimestamp(float(e_t) / 1000.)
 
@@ -101,38 +111,43 @@ class Match:
         for i in range(len(self.data['participantIdentities'])):
             name = self.data['participantIdentities'][i]['name']
             s = self.data['participants'][i]
-            d.append({
-                "summoner":
-                name,
-                "champ":
-                s['championId'],
-                "assists":
-                s['stats']['assists'],
-                "kills":
-                s['stats']['kills'],
-                "deaths":
-                s['stats']['deaths'],
-                "role":
-                s['timeline']['lane'],
-                "cs":
-                s['stats']['totalMinionsKilled'],
-                "vision":
-                s['stats']['visionScore'],
-                "overall_damage":
-                s['stats']['totalDamageDealt'],
+            summoner = {
+                "summoner": name,
+                "champ": s['championId'],
+                "assists": s['stats']['assists'],
+                "kills": s['stats']['kills'],
+                "deaths": s['stats']['deaths'],
+                "role": s['timeline']['lane'],
+                "cs": s['stats']['totalMinionsKilled'],
+                "vision": s['stats']['visionScore'],
+                "overall_damage": s['stats']['totalDamageDealt'],
                 "total_champ_damage":
                 s['stats']['totalDamageDealtToChampions'],
-                "total_damage_taken":
-                s['stats']['totalDamageTaken'],
-                "vision_wards_bought":
-                s['stats']['visionWardsBoughtInGame'],
-                "sight_wards_bought":
-                s['stats']['sightWardsBoughtInGame'],
-                'win':
-                s['stats']['win'],
-                'gold_earned':s['stats']['goldEarned'],
-                'wards_killed':s['stats']['wardsKilled']
-            })
+                "total_damage_taken": s['stats']['totalDamageTaken'],
+                "vision_wards_bought": s['stats']['visionWardsBoughtInGame'],
+                "sight_wards_bought": s['stats']['sightWardsBoughtInGame'],
+                'win': s['stats']['win'],
+                'gold_earned': s['stats']['goldEarned'],
+                'wards_killed': s['stats']['wardsKilled'],
+                "jungle minions killed": s['stats']['neutralMinionsKilled']
+            }
+
+            if (i < 5):
+                summoner['items'] = [
+                    s['stats']['item6'], s['stats']['item1'],
+                    s['stats']['item2'], s['stats']['item3'],
+                    s['stats']['item4'], s['stats']['item5'],
+                    s['stats']['item0']
+                ]
+            else:
+                summoner['items'] = [
+                    s['stats']['item0'], s['stats']['item1'],
+                    s['stats']['item2'], s['stats']['item6'],
+                    s['stats']['item3'], s['stats']['item5'],
+                    s['stats']['item4']
+                ]
+            d.append(summoner)
+
         t1 = d[:5]
         t2 = d[5:]
 

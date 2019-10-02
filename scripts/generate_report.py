@@ -473,7 +473,7 @@ def parse_matches(m):
     match = {}
     match['id'] = m.match_id
     match['date'] = m.get_date()
-    match['game_duration'] = str(round(m.get_game_duration(),2))
+    match['game_duration'] = m.get_game_duration()
 
     match['blue_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_blue_bans()]
     match['red_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_red_bans()]
@@ -493,6 +493,67 @@ def parse_matches(m):
     match['matchups'] = matchups
 
     return match
+
+
+def update_items():
+    url = "http://ddragon.leagueoflegends.com/cdn/9.19.1/data/en_US/item.json"
+    item_images_url = "http://ddragon.leagueoflegends.com/cdn/9.19.1/img/item/"
+    item_file_path = "../inhouse_analyzer/client/src/components/images/items/"
+    r = requests.get(url)
+    if r.status_code == 200:
+        r = r.json()
+        r = r['data']
+        for k in r:
+            item_image = r[k]['image']['full']
+            img_r = requests.get(item_images_url + item_image)
+            if (img_r.status_code == 200):
+                with open(item_file_path + item_image, 'wb') as f:
+                    f.write(img_r.content)
+
+
+def aggregate_champions_matchups(report):
+    r_c = report['champions']
+    for match in report['match_history']:
+        for roles in match['matchups']:
+            s1 = match['matchups'][roles][0]
+            s2 = match['matchups'][roles][1]
+
+            if not r_c[s1['champ']].get('matchups'):
+                r_c[s1['champ']]['matchups'] = {}
+            if not r_c[s2['champ']].get('matchups'):
+                r_c[s2['champ']]['matchups'] = {}
+
+            if not r_c[s1['champ']]['matchups'].get(s2['champ']):
+                r_c[s1['champ']]['matchups'][s2['champ']] = {
+                    "won": 0,
+                    "lost": 0
+                }
+            if not r_c[s2['champ']]['matchups'].get(s1['champ']):
+                r_c[s2['champ']]['matchups'][s1['champ']] = {
+                    "won": 0,
+                    "lost": 0
+                }
+
+            s1_m = r_c[s1['champ']]['matchups'][s2['champ']]
+            s2_m = r_c[s2['champ']]['matchups'][s1['champ']]
+
+            if s1['win']:
+                s1_m['won'] += 1
+                s2_m['lost'] += 1
+            else:
+                s1_m['lost'] += 1
+                s2_m['won'] += 1
+    for champ in r_c:
+        if champ not in ['banned champions', 'picked champions', 'champions']:
+            if r_c[champ].get("matchups"):
+                for m in r_c[champ]['matchups']:
+                    n = r_c[champ]['matchups'][m]
+                    r_c[champ]['matchups'][m][
+                        'games_played'] = n['won'] + n['lost']
+                    r_c[champ]['matchups'][m]['win_rate'] = str(
+                        round(n['won'] / n['games_played'], 2)) + "%"
+
+    return report
 
 
 def main(season):
@@ -529,13 +590,14 @@ def main(season):
     report = order_players_by_winrate(report)
     report = order_partners_by_winrate(report)
     report = aggregate_champions_records(report)
+    report = aggregate_champions_matchups(report)
     report = aggregate_role_records(report)
 
     post_to_server(report, season)
-    # pp.pprint(report['summoners']['BladesVengeance']['sorted_partners'])
     print("processed {} matches for {}".format(len(matches), season))
 
 
 if __name__ == "__main__":
     season = sys.argv[1]
     main(season)
+    # update_items()

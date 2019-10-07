@@ -126,11 +126,6 @@ SEASON_THREE_MATCH_IDS = [
     3166823186
 ]
 
-SUMMONERS = [
-    'Raphib737', 'Reved', 'Anjou', 'Mooogen', 'Shooeye', 'lgnore',
-    'BladesVengeance', 'Iniki', 'Aksynial', 'MasterAndo', 'CindyIsChillen',
-    'Williamxc', 'Rykoza']
-
 CHAMPION_IDS = {
     '266': 'Aatrox',
     '103': 'Ahri',

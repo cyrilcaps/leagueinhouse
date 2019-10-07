@@ -19,6 +19,9 @@ class Match:
         self.blue_bans = [b['championId'] for b in match['teams'][0]['bans']]
         self.red_bans = [b['championId'] for b in match['teams'][1]['bans']]
 
+        self.blue_team_stats = self.data['teams'][0]
+        self.red_team_stats = self.data['teams'][1]
+
         self.all_picks = []
         for b in match['participants']:
             self.all_picks.append({
@@ -49,6 +52,9 @@ class Match:
 
         self.blue_picks = self.all_picks[:5]
         self.red_picks = self.all_picks[5:]
+
+    def get_team_stats(self):
+        return ((self.blue_team_stats, self.red_team_stats))
 
     def get_game_duration(self):
         return self.game_duration
@@ -129,7 +135,21 @@ class Match:
                 'win': s['stats']['win'],
                 'gold_earned': s['stats']['goldEarned'],
                 'wards_killed': s['stats']['wardsKilled'],
-                "jungle minions killed": s['stats']['neutralMinionsKilled']
+                "jungle_minions_killed": s['stats']['neutralMinionsKilled'],
+                "damage_dealt_to_objectives":
+                s['stats']['damageDealtToObjectives'],
+                "damage_taken": s['stats']['totalDamageTaken'],
+                "heal": s['stats']['totalHeal'],
+                "wards_killed": s['stats']['wardsKilled'],
+                "champ_level": s['stats']['champLevel'],
+                "triple_kills": s['stats']['tripleKills'],
+                "turret_kills": s['stats']['turretKills'],
+                "unreal_kills": s['stats']['unrealKills'],
+                "quadra_kills": s['stats']['quadraKills'],
+                "killing_sprea_streak": s['stats']['killingSprees'],
+                "first_blood_assist": s['stats']['firstBloodAssist'],
+                "first_blood_kill": s['stats']['firstBloodKill'],
+                "timeline": s['timeline']
             }
 
             if (i < 5):

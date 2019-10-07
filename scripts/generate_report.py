@@ -265,11 +265,6 @@ def aggregate_summoners_champions_record(report):
                 average_kda_per_champ[c[0]['champion']]['assists'] += a
                 average_kda_per_champ[c[0]['champion']]['games played'] += 1
 
-                # print("c0")
-                # pp.pprint(c[0])
-                # print("c1")
-                # pp.pprint(c[1])
-                # print("--------------------")
                 if not match_history.get(c[0]['champion']):
                     match_history[c[0]['champion']] = []
                 match_history[c[0]['champion']].append((c[0], c[1]))
@@ -469,6 +464,7 @@ def aggregate_role_records(report):
 
 def parse_matches(m):
     match = {}
+    match['blue_stats'],match['red_stats']=m.get_team_stats()
     match['id'] = m.match_id
     match['date'] = m.get_date()
     match['game_duration'] = m.get_game_duration()
@@ -590,6 +586,7 @@ def main(season):
     report = aggregate_champions_records(report)
     report = aggregate_champions_matchups(report)
     report = aggregate_role_records(report)
+    
     post_to_server(report, season)
     print("processed {} matches for {}".format(len(matches), season))
 

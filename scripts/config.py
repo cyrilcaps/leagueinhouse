@@ -1,6 +1,6 @@
 RIOT_API_KEY = "RGAPI-4000984e-4f3a-4061-90c0-13b8c4cf6ed0" #PERSONAL KEY
 
-# RIOT_API_KEY = "RGAPI-dd7b838e-e10e-4583-b9f9-445621f9e6f1"
+# RIOT_API_KEY = ""
 
 
 RIOT_GAMES_LINK = "https://na1.api.riotgames.com"

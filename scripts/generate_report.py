@@ -360,16 +360,14 @@ def order_players_by_winrate(report):
             (s, r_s[s]['won'] / (r_s[s]['won'] + r_s[s]['lost']),
              r_s[s]['games played']))
     ordered_keys = sorted(ordered_keys, key=takeSecond, reverse=True)
-
     o_l = []
     n_l = []
     for x in ordered_keys:
-        if x[2] < 3:
+        if x[2] < len(report['match_history'])/6:
             n_l.append(x)
         else:
             o_l.append(x)
     ordered_keys = o_l + n_l
-
     r_s['sorted_summoners'] = [x[0] for x in ordered_keys]
     return report
 
@@ -592,7 +590,6 @@ def main(season):
     report = aggregate_champions_records(report)
     report = aggregate_champions_matchups(report)
     report = aggregate_role_records(report)
-
     post_to_server(report, season)
     print("processed {} matches for {}".format(len(matches), season))
 

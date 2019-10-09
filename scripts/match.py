@@ -146,7 +146,7 @@ class Match:
                 "turret_kills": s['stats']['turretKills'],
                 "unreal_kills": s['stats']['unrealKills'],
                 "quadra_kills": s['stats']['quadraKills'],
-                "killing_sprea_streak": s['stats']['killingSprees'],
+                "killing_spree_streak": s['stats']['killingSprees'],
                 "first_blood_assist": s['stats']['firstBloodAssist'],
                 "first_blood_kill": s['stats']['firstBloodKill'],
                 "timeline": s['timeline']

@@ -358,7 +358,7 @@ def order_players_by_winrate(report):
     o_l = []
     n_l = []
     for x in ordered_keys:
-        if x[2] < len(report['match_history'])/6:
+        if x[2] < len(report['match_history']) / 6:
             n_l.append(x)
         else:
             o_l.append(x)
@@ -464,7 +464,7 @@ def aggregate_role_records(report):
 
 def parse_matches(m):
     match = {}
-    match['blue_stats'],match['red_stats']=m.get_team_stats()
+    match['blue_stats'], match['red_stats'] = m.get_team_stats()
     match['id'] = m.match_id
     match['date'] = m.get_date()
     match['game_duration'] = m.get_game_duration()
@@ -481,11 +481,25 @@ def parse_matches(m):
     match['losing_team_color'] = m.losing_team_color
 
     matchups = m.get_match_ups()
+
+    match['blue_kills'] = 0
+    match['red_kills'] = 0
+
+    match['blue_gold'] = 0
+    match['red_gold'] = 0
+
     for role in matchups:
+        i = 1
         for player in matchups[role]:
             player['champ'] = CHAMPION_IDS[str(player['champ'])]
+            if i % 2 == 1:
+                match['blue_kills'] += player['kills']
+                match['blue_gold'] += player['gold_earned']
+            else:
+                match['red_kills'] += player['kills']
+                match['red_gold'] += player['gold_earned']
+            i += 1
     match['matchups'] = matchups
-
     return match
 
 
@@ -586,7 +600,7 @@ def main(season):
     report = aggregate_champions_records(report)
     report = aggregate_champions_matchups(report)
     report = aggregate_role_records(report)
-    
+
     post_to_server(report, season)
     print("processed {} matches for {}".format(len(matches), season))
 

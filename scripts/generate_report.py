@@ -117,8 +117,6 @@ def get_right_roles(team):
     for t in range(len(team)):
         if team[t]['role'] == "BOTTOM":
             bottoms_index.append((t, team[t]['cs'], team[t]['summoner']))
-    # print(bottoms_index)
-    # print("returning: {}".format(sorted(bottoms_index, key=takeSecond)[0]))
     return sorted(bottoms_index, key=takeSecond)[0][0]
 
 
@@ -128,7 +126,6 @@ def get_supports_from_game(picks):
 
     s1 = get_right_roles(t1)
     s2 = get_right_roles(t2) + 5
-    # print(picks[s1], picks[s2])
     picks[s1]['role'] = "SUPPORT"
     picks[s2]['role'] = "SUPPORT"
     return picks
@@ -481,8 +478,11 @@ def parse_matches(m):
     match['losing_team_color'] = m.losing_team_color
 
     match['performance_scores'] = m.get_performance_scores()
-
     matchups = m.get_match_ups()
+    
+    for lane in matchups:
+        for summ in matchups[lane]:
+            summ['performance_rank'] = match['performance_scores'][summ['summoner']]['rank']
 
     match['blue_kills'] = 0
     match['red_kills'] = 0
@@ -573,7 +573,7 @@ def main(season):
     for match in matches:
         m = Match(match)
         # updates statistics for the summoner in each game
-        pp.pprint(m.match_id)
+        print("{} - {}".format(m.match_id, m.date))
 
         report['match_history'].append(parse_matches(m))
         report = update_match_results(report, m.get_winning_team(),
@@ -588,7 +588,6 @@ def main(season):
         report = update_champions(report, m.get_all_picks(),
                                   m.get_participants(), m.get_winning_team(),
                                   m.get_all_bans())
-
     report['match_history'] = sorted(
         report['match_history'], key=lambda m: m['date'], reverse=True)
 

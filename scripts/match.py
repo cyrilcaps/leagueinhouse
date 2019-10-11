@@ -154,7 +154,7 @@ class Match:
                 if stats[stat] > 0:
                     raw_score = float(summoner[stat])/float(stats[stat]) * config.STAT_MULTIPLIER[stat]
                     score += raw_score
-                    print("\t{}: {} ({}/{} * {})".format(stat, raw_score, summoner[stat], stats[stat], config.STAT_MULTIPLIER[stat]))
+                    # print("\t{}: {} ({}/{} * {})".format(stat, raw_score, summoner[stat], stats[stat], config.STAT_MULTIPLIER[stat]))
         return score
 
     def get_performance_scores(self):
@@ -162,9 +162,9 @@ class Match:
         for i in range(len(self.data['participantIdentities'])):
             name = self.data['participantIdentities'][i]['name']
             s = self.data['participants'][i]
-            print(name)
+            # print(name)
             performance_score = self.get_performance_score(self.max_stats, s['stats'])
-            print("\t{}".format(performance_score))
+            # print("\t{}".format(performance_score))
             performance_scores[name] = performance_score
         return OrderedDict(sorted(performance_scores.items(), key=lambda x: x[1]))
 
@@ -173,9 +173,11 @@ class Match:
         for i in range(len(self.data['participantIdentities'])):
             name = self.data['participantIdentities'][i]['name']
             s = self.data['participants'][i]
+            performance_score = self.get_performance_score(self.max_stats, s['stats'])
             summoner = {
                 "summoner": name,
                 "champ": s['championId'],
+                "performance_score": performance_score,
                 "assists": s['stats']['assists'],
                 "kills": s['stats']['kills'],
                 "deaths": s['stats']['deaths'],

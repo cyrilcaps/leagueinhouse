@@ -481,7 +481,6 @@ def parse_matches(m):
     match['losing_team_color'] = m.losing_team_color
 
     match['performance_scores'] = m.get_performance_scores()
-    print(match['performance_scores'])
 
     matchups = m.get_match_ups()
 
@@ -574,7 +573,8 @@ def main(season):
     for match in matches:
         m = Match(match)
         # updates statistics for the summoner in each game
-        print("{} - {}".format(m.match_id, m.date))
+        pp.pprint(m.match_id)
+
         report['match_history'].append(parse_matches(m))
         report = update_match_results(report, m.get_winning_team(),
                                       m.get_losing_team())

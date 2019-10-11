@@ -288,5 +288,27 @@ CHAMPION_IDS = {
   '246': 'Qiyana'
 }
 
+STAT_MULTIPLIER = {
+    "kills": 1.3,
+    "deaths": -1.5,
+    "assists": 1.2,
+    "totalDamageDealtToChampions": 1.0,
+    "totalDamageTaken": 0.8,
+    "goldEarned": 0.8,
+    "damageDealtToObjectives": 0.85,
+    "damageDealtToTurrets": 0.8,
+    "totalUnitsHealed": 0.5,
+    "totalHeal": 0.5,
+    "timeCCingOthers": 0.6,
+    "totalMinionsKilled": 0.9,
+    "neutralMinionsKilled": 0.5,
+    "neutralMinionsKilledTeamJungle": 0.5,
+    "neutralMinionsKilledEnemyJungle": 0.5,
+    "visionScore": 1.0,
+    "visionWardsBoughtInGame": 0.6,
+    "wardsPlaced": 0.6,
+    "wardsKilled": 0.6
+}
+
 if __name__ == "__main__":
   pass

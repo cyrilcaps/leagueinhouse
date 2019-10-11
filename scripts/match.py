@@ -1,7 +1,10 @@
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
 import datetime
+from collections import OrderedDict
+import json
 
+import config
 
 class Match:
     def __init__(self, match):
@@ -21,6 +24,7 @@ class Match:
 
         self.blue_team_stats = self.data['teams'][0]
         self.red_team_stats = self.data['teams'][1]
+        self.max_stats = self.get_max_stats()['max']
 
         self.all_picks = []
         for b in match['participants']:
@@ -112,6 +116,58 @@ class Match:
         else:
             return ["winning team can not be determined"]
 
+    def get_max_stats(self):
+        team_stats = {"red":{},"blue":{},"total":{},"max":{}}
+        for participant in self.data['participants']:
+            stats = participant['stats']
+            for key, value in stats.items():
+                # if participant['teamId'] == 100:
+                #     team_key = "red"
+                # else:
+                #     team_key = "blue"
+
+                # try:
+                #     team_stats[team_key][key] += value
+                # except:
+                #     team_stats[team_key][key] = value
+                # try:
+                #     team_stats['total'][key] += value
+                # except:
+                #     team_stats['total'][key] = value
+                try:
+                    if value > team_stats['max'][key]:
+                        team_stats['max'][key] = value
+                except:
+                    team_stats['max'][key] = value
+        return team_stats
+
+    def get_performance_score(self, stats, summoner):
+        score = 0
+        for stat in stats:
+            if stat in ['totalDamageDealtToChampions','totalDamageTaken','goldEarned',
+                    'damageDealtToObjectives','damageDealtToTurrets',
+                    'totalUnitsHealed','totalHeal','timeCCingOthers',
+                    'totalMinionsKilled','neutralMinionsKilled', 
+                    'neutralMinionsKilledTeamJungle','neutralMinionsKilledEnemyJungle',
+                    'visionScore','visionWardsBoughtInGame','wardsPlaced','wardsKilled',
+                    'kills','deaths','assists']:
+                if stats[stat] > 0:
+                    raw_score = float(summoner[stat])/float(stats[stat]) * config.STAT_MULTIPLIER[stat]
+                    score += raw_score
+                    print("\t{}: {} ({}/{} * {})".format(stat, raw_score, summoner[stat], stats[stat], config.STAT_MULTIPLIER[stat]))
+        return score
+
+    def get_performance_scores(self):
+        performance_scores = {}
+        for i in range(len(self.data['participantIdentities'])):
+            name = self.data['participantIdentities'][i]['name']
+            s = self.data['participants'][i]
+            print(name)
+            performance_score = self.get_performance_score(self.max_stats, s['stats'])
+            print("\t{}".format(performance_score))
+            performance_scores[name] = performance_score
+        return OrderedDict(sorted(performance_scores.items(), key=lambda x: x[1]))
+
     def get_match_ups(self):
         d = []
         for i in range(len(self.data['participantIdentities'])):
@@ -202,7 +258,6 @@ class Match:
             else:
                 p['result'] = "lost"
             data[p['role']].append(p)
-
         return data
 
     def set_match_results(self):

@@ -469,8 +469,11 @@ def parse_matches(m):
     match['blue_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_blue_bans()]
     match['red_bans'] = [CHAMPION_IDS[str(c)] for c in m.get_red_bans()]
 
-    match['blue_picks'] = m.get_teams()['blue']
-    match['red_picks'] = m.get_teams()['red']
+    match['blue_team'] = m.get_teams()['blue']
+    match['red_team'] = m.get_teams()['red']
+
+    match['blue_picks'] = m.get_blue_picks()
+    match['red_picks'] = m.get_red_picks()
 
     match['winner'] = m.get_winning_team()
     match['loser'] = m.get_losing_team()
@@ -479,7 +482,7 @@ def parse_matches(m):
 
     match['performance_scores'] = m.get_performance_scores()
     matchups = m.get_match_ups()
-    
+
     for lane in matchups:
         for summ in matchups[lane]:
             summ['performance_rank'] = match['performance_scores'][summ['summoner']]['rank']
@@ -588,6 +591,7 @@ def main(season):
         report = update_champions(report, m.get_all_picks(),
                                   m.get_participants(), m.get_winning_team(),
                                   m.get_all_bans())
+
     report['match_history'] = sorted(
         report['match_history'], key=lambda m: m['date'], reverse=True)
 

@@ -52,9 +52,21 @@ class Match:
                     b['stats']['item6']
                 ]
             })
-
+        self.set_order_of_picks()
         self.blue_picks = self.all_picks[:5]
         self.red_picks = self.all_picks[5:]
+
+    def set_order_of_picks(self):
+        pick_rules = "brrbbrrbbr"
+        b_pick = 0
+        r_pick = 5
+        for i in range(len(pick_rules)):
+            if pick_rules[i] == 'b':
+                self.all_picks[b_pick]['pick order'] = i + 1
+                b_pick += 1
+            else:
+                self.all_picks[r_pick]['pick order'] = i + 1
+                r_pick += 1
 
     def get_team_stats(self):
         return ((self.blue_team_stats, self.red_team_stats))
@@ -78,10 +90,10 @@ class Match:
         return self.blue_bans + self.red_bans
 
     def get_blue_picks(self):
-        return self.get_blue_picks
+        return self.blue_picks
 
     def get_red_picks(self):
-        return self.get_red_picks
+        return self.red_picks
 
     def get_all_picks(self):
         return self.all_picks

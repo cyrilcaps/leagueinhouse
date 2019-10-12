@@ -1,7 +1,9 @@
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
 import datetime
+import json
 
+import config
 
 class Match:
     def __init__(self, match):
@@ -21,6 +23,7 @@ class Match:
 
         self.blue_team_stats = self.data['teams'][0]
         self.red_team_stats = self.data['teams'][1]
+        self.max_stats = self.get_max_stats()['max']
 
         self.all_picks = []
         for b in match['participants']:
@@ -49,9 +52,21 @@ class Match:
                     b['stats']['item6']
                 ]
             })
-
+        self.set_order_of_picks()
         self.blue_picks = self.all_picks[:5]
         self.red_picks = self.all_picks[5:]
+
+    def set_order_of_picks(self):
+        pick_rules = "brrbbrrbbr"
+        b_pick = 0
+        r_pick = 5
+        for i in range(len(pick_rules)):
+            if pick_rules[i] == 'b':
+                self.all_picks[b_pick]['pick order'] = i + 1
+                b_pick += 1
+            else:
+                self.all_picks[r_pick]['pick order'] = i + 1
+                r_pick += 1
 
     def get_team_stats(self):
         return ((self.blue_team_stats, self.red_team_stats))
@@ -75,10 +90,10 @@ class Match:
         return self.blue_bans + self.red_bans
 
     def get_blue_picks(self):
-        return self.get_blue_picks
+        return self.blue_picks
 
     def get_red_picks(self):
-        return self.get_red_picks
+        return self.red_picks
 
     def get_all_picks(self):
         return self.all_picks
@@ -112,14 +127,72 @@ class Match:
         else:
             return ["winning team can not be determined"]
 
+    def get_max_stats(self):
+        team_stats = {"red":{},"blue":{},"total":{},"max":{}}
+        for participant in self.data['participants']:
+            stats = participant['stats']
+            for key, value in stats.items():
+                # if participant['teamId'] == 100:
+                #     team_key = "red"
+                # else:
+                #     team_key = "blue"
+
+                # try:
+                #     team_stats[team_key][key] += value
+                # except:
+                #     team_stats[team_key][key] = value
+                # try:
+                #     team_stats['total'][key] += value
+                # except:
+                #     team_stats['total'][key] = value
+                try:
+                    if value > team_stats['max'][key]:
+                        team_stats['max'][key] = value
+                except:
+                    team_stats['max'][key] = value
+        return team_stats
+
+    def get_performance_score(self, stats, summoner):
+        score = 0
+        for stat in stats:
+            if stat in ['totalDamageDealtToChampions','totalDamageTaken','goldEarned',
+                    'damageDealtToObjectives','damageDealtToTurrets',
+                    'totalUnitsHealed','totalHeal','timeCCingOthers',
+                    'totalMinionsKilled','neutralMinionsKilled', 
+                    'neutralMinionsKilledTeamJungle','neutralMinionsKilledEnemyJungle',
+                    'visionScore','visionWardsBoughtInGame','wardsPlaced','wardsKilled',
+                    'kills','deaths','assists']:
+                if stats[stat] > 0:
+                    raw_score = float(summoner[stat])/float(stats[stat]) * config.STAT_MULTIPLIER[stat]
+                    score += raw_score
+        return score
+
+    def get_performance_scores(self):
+        performance_scores = {}
+        for i in range(len(self.data['participantIdentities'])):
+            name = self.data['participantIdentities'][i]['name']
+            s = self.data['participants'][i]
+            performance_score = self.get_performance_score(self.max_stats, s['stats'])
+            performance_scores[name] = performance_score
+        
+
+        s_p = sorted(performance_scores.items(), key=lambda x: x[1])
+
+        score = {}
+        for i in range(len(s_p)):
+            score[s_p[i][0]] = {"score":s_p[i][1],"rank":len(s_p)-i}
+        return score
+
     def get_match_ups(self):
         d = []
         for i in range(len(self.data['participantIdentities'])):
             name = self.data['participantIdentities'][i]['name']
             s = self.data['participants'][i]
+            performance_score = self.get_performance_score(self.max_stats, s['stats'])
             summoner = {
                 "summoner": name,
                 "champ": s['championId'],
+                "performance_score": performance_score,
                 "assists": s['stats']['assists'],
                 "kills": s['stats']['kills'],
                 "deaths": s['stats']['deaths'],
@@ -202,7 +275,6 @@ class Match:
             else:
                 p['result'] = "lost"
             data[p['role']].append(p)
-
         return data
 
     def set_match_results(self):

@@ -59,6 +59,7 @@ def update_match_results_helper(report, status, team):
         if r_s[s].get('won', 0) > 0:
             r_s[s]['win rate'] = "{:.2f}%".format(
                 r_s[s]['won'] / r_s[s]['games played'] * 100)
+            r_s[s]['win_rate'] = round(r_s[s]['won'] / r_s[s]['games played'] * 100,2)
         else:
             r_s[s]['win rate'] = "00.00%"
 
@@ -355,12 +356,13 @@ def order_players_by_winrate(report):
     o_l = []
     n_l = []
     for x in ordered_keys:
-        if x[2] < len(report['match_history']) / 6:
+        if x[2] < len(report['match_history']) / 7:
             n_l.append(x)
         else:
             o_l.append(x)
-    ordered_keys = o_l + n_l
-    r_s['sorted_summoners'] = [x[0] for x in ordered_keys]
+    ordered_rankings_keys = o_l + n_l
+    r_s['sorted_summoners'] = [x[0] for x in ordered_rankings_keys]
+    r_s['sorted_summoners_matchmaking'] = [x[0] for x in ordered_keys]
     return report
 
 
@@ -368,7 +370,7 @@ def order_partners_by_winrate(report):
     r_s = report['summoners']
 
     for s in r_s:
-        if (s == "sorted_summoners"):
+        if (s in ["sorted_summoners", "sorted_summoners_matchmaking"]):
             continue
         r_s[s]['sorted_partners'] = []
         for p in r_s[s]['partners']:
@@ -443,7 +445,7 @@ def aggregate_champions_records(report):
 def aggregate_role_records(report):
     r_s = report['summoners']
     for s in r_s:
-        if s not in ['sorted_summoners']:
+        if s not in ['sorted_summoners','sorted_summoners_matchmaking']:
             for r in r_s[s]['role']:
                 games_won = 0
                 games_played = 0
@@ -606,7 +608,6 @@ def main(season):
     report = aggregate_champions_records(report)
     report = aggregate_champions_matchups(report)
     report = aggregate_role_records(report)
-
     post_to_server(report, season)
     print("processed {} matches for {}".format(len(matches), season))
 

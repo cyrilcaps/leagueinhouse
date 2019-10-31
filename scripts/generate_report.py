@@ -35,7 +35,6 @@ def get_matches(season):
 
     return matches
 
-
 def update_match_results_helper(report, status, team):
     r_s = report['summoners']
     for s in team:
@@ -212,6 +211,57 @@ def merge_participants_picks_results(picks, participants, winning_team):
 
         d.append(temp)
     return d
+
+
+def aggregate_summoners_match_history(report):
+    player_names = list(report['summoners'].keys())
+    dates = []
+    player_stats = {}
+    graph_y = {}
+    match_count = 1
+
+    for match in report['match_history'][::-1]:
+        dates.append(match['date'])
+        for matchup in match['matchups']:
+            for summoner in match['matchups'][matchup]:
+                name = summoner['summoner']
+                result = summoner['win']
+                try:
+                    player_stats[name].append(result)
+                except:
+                    player_stats[name] = [result]
+        for name in player_names:
+            try:
+                average = float(sum(player_stats[name]))/float(len(player_stats[name]))
+            except:
+                average = 0.0
+            try:
+                graph_y[name].append(average)
+            except:
+                graph_y[name] = [average]
+        match_count += 1
+    graph_x = list(range(1, match_count))
+
+    for name in player_stats:
+        last_ten = player_stats[name][-10:]
+        wins = sum(last_ten)
+        loses = len(last_ten) - wins
+        report['summoners'][name]['last ten'] = "{}-{}".format(wins,loses)
+        
+        stats = player_stats[name]
+        start = stats[-1]
+        streak = 0
+        for stat in stats[::-1]:
+            if stat == start:
+                streak += 1
+            else:
+                break
+        if start:
+            s = 'W'
+        else:
+            s = 'L'
+        report['summoners'][name]['streak'] = "{} {}".format(streak, s)
+    return report
 
 
 def aggregate_summoners_champions_record(report):
@@ -600,6 +650,7 @@ def main(season):
     for match in report['match_history']:
         match['date'] = match['date'].strftime("%B %d, %Y %I:%M %p")
 
+    report = aggregate_summoners_match_history(report)
     report = aggregate_summoners_champions_record(report)
     report = aggregate_summoners_records(report)
     report = aggregate_played_roles(report)

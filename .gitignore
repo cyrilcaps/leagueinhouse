@@ -9,8 +9,6 @@ yarn-error.log*
 
 .DS_Store
 
-scripts/__pycache__/
-
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -40,6 +38,13 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
+
+# Firebase key
+leagueinhouse-firebase.json
+
+# Python compile
+scripts/__pycache__/
+*.pyc
 
 # Dependency directories
 node_modules/

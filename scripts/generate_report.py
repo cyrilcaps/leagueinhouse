@@ -4,6 +4,7 @@ import pprint
 
 from match import Match
 from collections import Counter
+import firebase
 
 from os import listdir, mkdir
 from os.path import isfile, join, dirname, abspath
@@ -649,6 +650,7 @@ def main(season):
 
     for match in report['match_history']:
         match['date'] = match['date'].strftime("%B %d, %Y %I:%M %p")
+        firebase.set_document("{}.match".format(season), str(match['id']), match)
 
     report = aggregate_summoners_match_history(report)
     report = aggregate_summoners_champions_record(report)

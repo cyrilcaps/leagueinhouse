@@ -1,6 +1,6 @@
 RIOT_API_KEY = "RGAPI-4000984e-4f3a-4061-90c0-13b8c4cf6ed0" #PERSONAL KEY
 
-# RIOT_API_KEY = "RGAPI-d83169e4-a411-4043-b7b0-2945810b2007"
+RIOT_API_KEY = "RGAPI-ecc1a79f-76c9-4c48-8cc7-2286840ef829"
 
 RIOT_GAMES_LINK = "https://na1.api.riotgames.com"
 RIOT_GET_MATCHES = "/lol/match/v4/matchlists/by-account/"
@@ -155,7 +155,12 @@ SEASON_THREE_MATCH_IDS = [
   3180733333,
   3180663715,
   3183226884,
-  3183227282
+  3183227282,
+  3183227654,
+  3202307730,
+  3202308140,
+  3205506677,
+  3205447252
 ]
 
 CHAMPION_IDS = {
@@ -303,7 +308,8 @@ CHAMPION_IDS = {
   '142': 'Zoe',
   '143': 'Zyra',
   '350': 'Yuumi',
-  '246': 'Qiyana'
+  '246': 'Qiyana',
+  '235': 'Senna'
 }
 
 STAT_MULTIPLIER = {

@@ -623,7 +623,7 @@ def aggregate_champions_matchups(report):
 
 
 def main(season):
-    report = {'summoners': {}, 'champions': {}, 'match_history': []}
+    report = {'season': season, 'summoners': {}, 'champions': {}, 'match_history': []}
     report = get_all_champions(report)
     matches = get_matches(season)
     for match in matches:

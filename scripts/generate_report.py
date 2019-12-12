@@ -19,11 +19,11 @@ def get_matches(season):
     matches = []
     seasons = ['season_1', 'season_2', 'season_3']
     if season in seasons:
-        matches_ds = [dirname(abspath(__file__)) + "/" + season]
+        matches_ds = [dirname(abspath(__file__)) + "/matches/" + season]
     elif season == 'overall':
         matches_ds = []
         for s in seasons:
-            matches_ds += [dirname(abspath(__file__)) + "/" + s]
+            matches_ds += [dirname(abspath(__file__)) + "/matches/" + s]
     else:
         print(
             "Invalid or no season found (please use 'season_1' or 'season_2' or season_3"
@@ -621,6 +621,11 @@ def aggregate_champions_matchups(report):
 
     return report
 
+def upload_participants(season, match_id, participants):
+    document = {}
+    for participant in participants:
+        document[str(participant['participantId'])] = participant['name']
+    firebase.set_document("{}.participants".format(season), str(match_id), document)
 
 def main(season):
     report = {'season': season, 'summoners': {}, 'champions': {}, 'match_history': []}
@@ -630,6 +635,8 @@ def main(season):
         m = Match(match)
         # updates statistics for the summoner in each game
         print("{} - {}".format(m.match_id, m.date))
+
+        # upload_participants(season, m.match_id, m.get_participants())
 
         report['match_history'].append(parse_matches(m))
         report = update_match_results(report, m.get_winning_team(),
@@ -650,7 +657,7 @@ def main(season):
 
     for match in report['match_history']:
         match['date'] = match['date'].strftime("%B %d, %Y %I:%M %p")
-        firebase.set_document("{}.match".format(season), str(match['id']), match)
+        # firebase.set_document("{}.match".format(season), str(match['id']), match)
 
     report = aggregate_summoners_match_history(report)
     report = aggregate_summoners_champions_record(report)

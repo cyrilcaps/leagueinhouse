@@ -8,5 +8,8 @@ python3.7 generate_report.py season_2
 echo "Generating season 3 report..."
 python3.7 generate_report.py season_3
 
+echo "Generating season 4 report..."
+python3.7 generate_report.py season_4
+
 echo "Generating overall report..."
 python3.7 generate_report.py overall

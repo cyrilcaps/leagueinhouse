@@ -16,7 +16,7 @@ pp = pprint.PrettyPrinter(indent=2)
 
 def get_matches(season):
     matches = []
-    seasons = ['season_1', 'season_2', 'season_3']
+    seasons = ['season_1', 'season_2', 'season_3', 'season_4']
     if season in seasons:
         matches_ds = [dirname(abspath(__file__)) + "/" + season]
     elif season == 'overall':
@@ -25,7 +25,7 @@ def get_matches(season):
             matches_ds += [dirname(abspath(__file__)) + "/" + s]
     else:
         print(
-            "Invalid or no season found (please use 'season_1' or 'season_2' or season_3"
+            "Invalid or no season found (please use 'season_1' | 'season_2' | season_3 | season_4"
         )
         sys.exit()
 
@@ -59,7 +59,8 @@ def update_match_results_helper(report, status, team):
         if r_s[s].get('won', 0) > 0:
             r_s[s]['win rate'] = "{:.2f}%".format(
                 r_s[s]['won'] / r_s[s]['games played'] * 100)
-            r_s[s]['win_rate'] = round(r_s[s]['won'] / r_s[s]['games played'] * 100,2)
+            r_s[s]['win_rate'] = round(
+                r_s[s]['won'] / r_s[s]['games played'] * 100, 2)
         else:
             r_s[s]['win rate'] = "00.00%"
 
@@ -445,7 +446,7 @@ def aggregate_champions_records(report):
 def aggregate_role_records(report):
     r_s = report['summoners']
     for s in r_s:
-        if s not in ['sorted_summoners','sorted_summoners_matchmaking']:
+        if s not in ['sorted_summoners', 'sorted_summoners_matchmaking']:
             for r in r_s[s]['role']:
                 games_won = 0
                 games_played = 0
@@ -511,9 +512,9 @@ def parse_matches(m):
 
 
 def update_items():
-    url = "http://ddragon.leagueoflegends.com/cdn/9.19.1/data/en_US/item.json"
-    item_images_url = "http://ddragon.leagueoflegends.com/cdn/9.19.1/img/item/"
-    item_file_path = "../inhouse_analyzer/client/src/components/images/items/"
+    url = "http://ddragon.leagueoflegends.com/cdn/10.2.1/data/en_US/item.json"
+    item_images_url = "http://ddragon.leagueoflegends.com/cdn/10.2.1/img/item/"
+    item_file_path = "../inhouse_analyzer/src/components/images/items/"
     r = requests.get(url)
     if r.status_code == 200:
         r = r.json()

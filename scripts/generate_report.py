@@ -28,7 +28,6 @@ def get_matches(season):
             "Invalid or no season found (please use 'season_1' | 'season_2' | season_3 | season_4"
         )
         sys.exit()
-
     for matches_d in matches_ds:
         for match in listdir(matches_d):
             with open(matches_d + "/" + match) as m:
